@@ -1,0 +1,24 @@
+{
+  "name": "bookroom-nodejs-api",
+  "version": "1.0.0",
+  "description": "api for bookroom FATEC project by vdanviel",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vdanviel/bookroom-nodejs-api.git"
+  },
+  "author": "vdanviel",
+  "license": "SEE LICENCE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/vdanviel/bookroom-nodejs-api/issues"
+  },
+  "homepage": "https://github.com/vdanviel/bookroom-nodejs-api#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "uuid": "^10.0.0"
+  }
+}
