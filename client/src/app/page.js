@@ -8,3 +8,5 @@ export default function Home() {
     </main>
   );
 }
+
+//para rodar o react é npm run dev
