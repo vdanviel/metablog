@@ -1,7 +1,7 @@
 function LogoLoading() {
     return(
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <svg width="40px"
+        <svg width="150px"
           className="text-blue-500"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
