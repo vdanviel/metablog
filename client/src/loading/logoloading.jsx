@@ -1,4 +1,4 @@
-function LogoLoading() {
+export default function LogoLoading() {
     return(
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <svg width="150px"
@@ -13,5 +13,3 @@ function LogoLoading() {
       </div>
     );
 }
-
-export {LogoLoading};
