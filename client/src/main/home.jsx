@@ -9,7 +9,7 @@ const html = (
     <div className="flex justify-center items-center flex-col text-center text-[25px] rounded-[16px] bg-white p-5 m-5">
       <p>Welcome to</p>
 
-      <Mark bgcolorhex="#f0f8ff"/>
+      <Mark intercolor="#ffffff" bgcolorhex="#3b82f6"/>
 
       <p>Here you can post anything you think!</p>
     </div>
