@@ -20,6 +20,7 @@
   "homepage": "https://github.com/vdanviel/bookroom-nodejs-api#readme",
   "dependencies": {
     "express": "^4.19.2",
+    "mongodb": "^6.7.0",
     "uuid": "^10.0.0"
   }
 }

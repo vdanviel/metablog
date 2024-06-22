@@ -1,3 +1,6 @@
+//CONEXÃO AO MONGO
+//hnQZQXyvuZOphg4r
+
 //definindo variaveis..
 const express = require('express');//chamando express para montar o servidor..
 const fs = require('fs');//usando node file system para manipular o json..

@@ -4,7 +4,7 @@ import Button from "./../components/button.jsx";
 
 const html = (
   
-  <div>
+  <div className="flex justify-center items-center flex-col">
 
     <div className="flex justify-center items-center flex-col text-center text-[25px] rounded-[16px] bg-white p-5 m-5">
       <p>Welcome to</p>
