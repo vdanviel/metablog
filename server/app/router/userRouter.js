@@ -20,4 +20,20 @@ userRouter.get('/', async (req, res) => {
     }
 });
 
+userRouter.post('/save-photo', (req, res) => {
+    upload.single('file')(req, res, function (err) {
+        
+        if (err instanceof multer.MulterError) {
+            // Um erro ocorreu durante o upload
+            return res.status(500).json({ error: err.message });
+        } else if (err) {
+            // Um erro desconhecido ocorreu
+            return res.status(500).json({ error: 'Erro ao processar o upload' });
+        }
+
+        // Upload foi bem-sucedido
+        return res.status(200).json({ message: 'Arquivo enviado com sucesso', file: req.file });
+    });
+})
+
 export default userRouter;

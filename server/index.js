@@ -21,7 +21,6 @@ server.use((request, response, next) => {
 //user
 server.use('/user', userRouter);
 
-
 //LIGANDO SERVIDOR
 //server.listen() - liga servidor indicando qual porta o servidor vai escutar..
 server.listen(('0.0.0.0', 8000), () => {

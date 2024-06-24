@@ -3,6 +3,7 @@ import main from "../database/connect.js";
 const usercoll = main.collection('user');
 
 class UserModel {
+
     constructor(collection) {
         this.collection = collection;
     }
@@ -19,6 +20,26 @@ class UserModel {
             };
             return objerr;
         }
+    }
+
+    async insert(data) {
+
+        try {
+
+            this.collection.insertOne(data);
+            return true;
+
+        } catch (error) {
+
+            const objerr = {
+                status: false,
+                message: "Internal server error on model/user.",
+                erro: error
+            };
+
+            return objerr;
+        }
+
     }
 
     // Adicione outros métodos conforme necessário

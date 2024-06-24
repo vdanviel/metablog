@@ -15,6 +15,19 @@ const controller = {
         }
     },
 
+    async register_user(name, email, bio, password) {
+        try {
+
+            
+
+        } catch (error) {
+            return {
+                status: false,
+                message: "Internal server error on controller/user.",
+                erro: error
+            }
+        }
+    },
     
 };
 
