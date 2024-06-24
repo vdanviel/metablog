@@ -1,6 +1,6 @@
 import main from "../database/connect.js";
 
-const usercoll = main().collection('user');
+const usercoll = main.collection('user');
 
 class UserModel {
     constructor(collection) {

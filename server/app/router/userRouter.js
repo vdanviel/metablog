@@ -3,6 +3,21 @@ import controller from '../controller/userController.js';
 
 const userRouter = express.Router();
 
-userRouter.get('/', (req, res) => controller.index(req, res));
+//rotas user
+userRouter.get('/', async (req, res) => {
+    try {
+
+        res.status(200).json(await controller.index())
+
+    } catch (error) {
+        
+        res.status(200).json({
+            status: false,
+            message: "Internal server error on router/user.",
+            erro: error
+        })
+
+    }
+});
 
 export default userRouter;

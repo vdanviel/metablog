@@ -1,5 +1,3 @@
-
-
 //definindo variaveis..
 import express from 'express';
 import userRouter from './app/router/userRouter.js';
@@ -21,7 +19,7 @@ server.use((request, response, next) => {
 
 //ROTAS
 //user
-server.use('/user'. userRouter);
+server.use('/user', userRouter);
 
 
 //LIGANDO SERVIDOR

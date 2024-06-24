@@ -1,7 +1,17 @@
-import { MongoClient } from 'mongodb';
-const uri = "mongodb+srv://eucreio119:<password>@metablog.wwccpsr.mongodb.net/?retryWrites=true&w=majority&appName=metablog";
+import { MongoClient, ServerApiVersion } from 'mongodb';
+import jsondata from "../../config.json" assert {type: "json"};
 
-const client = new MongoClient(uri);
+const config = JSON.parse(JSON.stringify(jsondata));
+
+const uri = `mongodb+srv://eucreio119:${config.mongo.password}@metablog.wwccpsr.mongodb.net/?retryWrites=true&w=majority&appName=metablog`;
+
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
 // Database Name
 const dbName = 'metablog';
