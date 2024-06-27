@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/vdanviel/bookroom-nodejs-api#readme",
   "dependencies": {
+    "crypto-js": "^4.2.0",
     "express": "^4.19.2",
     "mongodb": "^6.7.0",
     "multer": "^1.4.5-lts.1",

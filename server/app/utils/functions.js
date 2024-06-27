@@ -2,7 +2,9 @@
 
 const utils = {
 
-    hash_string(){
+    validate(data){
+
+        forof
 
     }
 
