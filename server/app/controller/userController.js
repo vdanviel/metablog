@@ -27,8 +27,6 @@ const controller = {
             // Encrypt
             let cipherpassword = CryptoJS.AES.encrypt(password, config.crytokey).toString();
 
-            console.log(originalText); // 'my message'
-
             const info = {
                 name: name,
                 email: email,
