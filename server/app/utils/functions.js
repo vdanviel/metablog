@@ -7,13 +7,17 @@ const utils = {
         const missingFields = [];
     
         requiredFields.forEach(field => {
-            if (!data.hasOwnProperty(field) || data.field == null || data.field === '') {
+
+            if (!data.hasOwnProperty(field)) {
+
                 missingFields.push(field);
+
             }
+
         });
-    
+
         if (missingFields.length > 0) {
-            return `Os campos ${missingFields.join(', ')} são obrigatórios.`
+            return `Os campos (${missingFields.join(', ')}) são obrigatórios.`
         }
     
         return true;

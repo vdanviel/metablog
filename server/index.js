@@ -8,6 +8,12 @@ const server = express();
 //para servidor entender dados json das requisições, temos esse middleware express que entende dados json..
 server.use(express.json());
 
+// Middleware para analisar corpos de requisição codificados como URL-encoded
+server.use(express.urlencoded({ extended: true }));
+
+// Middleware para servir arquivos estáticos do diretório 'upload'
+server.use('/app/uploads/', express.static('E:/programas/laragon/www/metablog/server/uploads'));
+
 //adicionando headers para cors no servidor..
 server.use((request, response, next) => {
     response.header('Access-Control-Allow-Origin', '*');
@@ -23,7 +29,7 @@ server.use('/user', userRouter);
 
 //LIGANDO SERVIDOR
 //server.listen() - liga servidor indicando qual porta o servidor vai escutar..
-server.listen(('0.0.0.0', 8000), () => {
+server.listen(('localhost', 8005), () => {
 
     console.log("Running!");
 
