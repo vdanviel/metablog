@@ -123,4 +123,48 @@ userRouter.post('/upload-photo', uploaduserphoto.single('image'), async (req, re
     }
 });
 
+userRouter.post('/login', async (req, res) => {
+
+    try {
+
+        let required = ['email', 'password'];
+
+        let validating = utils.validate(req.body,required);
+
+        if(validating == true){
+
+            let login = await controller.login(req.body.email, req.body.password);
+
+            if (login.status == true) {
+                
+                res.status(200).json(login);
+
+            }else{
+
+                res.status(400).json(login);
+
+            }
+
+        }else{
+
+            res.status(400).json({
+                status: false,
+                text: validating
+            });
+
+        }
+
+    } catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+            error: {
+                message: error.message,
+                stack: error.stack
+            }
+        });
+    }
+
+})
+
 export default userRouter;

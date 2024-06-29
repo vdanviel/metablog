@@ -34,7 +34,7 @@
         async findbyid(id) {
 
             try {
-                const result = await this.collection.findOne({_id: new pkg.BSON.ObjectId(id)}).toArray();
+                const result = await this.collection.find({_id: new pkg.BSON.ObjectId(id)}).toArray();
 
                 return result;
             } catch (error) {

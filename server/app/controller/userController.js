@@ -131,14 +131,25 @@ const controller = {
 
                 if (original_password == password) {
                     
-                    return existed[0];
+                    return {
+                        status: true,
+                        text: "Autenticação realizada com sucesso!",
+                        data: existed
+                    };
+
+                }else{
+
+                    return {
+                        status: false,
+                        text: "A senha está incorreta.",
+                    };
 
                 }
 
             }else{
                 return {
                     status: false,
-                    text: "O email mencionado não está em nossa base de dados.",
+                    text: "Email inválido.",
                 };
             }
 

@@ -1,8 +1,11 @@
 //definindo variaveis..
 import express from 'express';
 import userRouter from './app/router/userRouter.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const server = express();
+
 
 //MIDDLEWARES
 //para servidor entender dados json das requisições, temos esse middleware express que entende dados json..
@@ -11,8 +14,12 @@ server.use(express.json());
 // Middleware para analisar corpos de requisição codificados como URL-encoded
 server.use(express.urlencoded({ extended: true }));
 
-// Middleware para servir arquivos estáticos do diretório 'upload'
-server.use('/app/uploads/', express.static('E:/programas/laragon/www/metablog/server/uploads'));
+// Resolve __dirname usando ES6
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Middleware para servir arquivos estáticos da pasta 'uploads'
+server.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //adicionando headers para cors no servidor..
 server.use((request, response, next) => {
