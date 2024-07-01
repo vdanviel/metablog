@@ -17,32 +17,35 @@ userRouter.post('/register', async (req, res) => {
 
     try {
 
-        let required = ['name', 'email', 'bio', 'password'];
+        let required = ['name', 'email',  'password', 'bio'];
 
         let validating = utils.validate(req.body,required);
+
+        console.log(req.body);
 
         if (validating === true) {
             let registered = await controller.register_user(req.body.name, req.body.email, req.body.bio, req.body.password);
 
             if (registered.status == false) {
                 
-                res.status(400).json({
+                return res.status(400).json({
                     status: false,
                     text: registered.text
                 });
 
             }
 
-            res.status(200).json({
+            return res.status(200).json({
                 status: true,
                 text: "Você foi registrado com sucesso!"
             });
 
         }else{
 
-            res.status(400).json({
+            return res.status(400).json({
                 status: false,
-                text: validating
+                text: "Preencha os campos obrigatórios.",
+                missing: validating
             });
 
         }
@@ -137,17 +140,17 @@ userRouter.post('/login', async (req, res) => {
 
             if (login.status == true) {
                 
-                res.status(200).json(login);
+                return res.status(200).json(login);
 
             }else{
 
-                res.status(400).json(login);
+                return res.status(400).json(login);
 
             }
 
         }else{
 
-            res.status(400).json({
+            return res.status(400).json({
                 status: false,
                 text: validating
             });

@@ -8,6 +8,7 @@ import('./styles/general.css')
 //rotes components
 import Home from "./main/home.jsx";
 import Register from "./main/register.jsx";
+import Login from "./main/login.jsx";
 
 //pinned components
 import Header from "./components/main/navbar.jsx";
@@ -27,6 +28,10 @@ const modifiedrouter = createBrowserRouter([
     path: "sign-up",
     element: <Register/>,
   },
+  {
+    path: "sign-in",
+    element: <Login/>,
+  }
 ]);
 
 const user = localStorage.getItem('user');

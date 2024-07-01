@@ -20,7 +20,7 @@ export default function Mark({ gradient, bgcolorhex, intercolor }) {
 
   return (
     <div
-      className="rounded-[16px] m-5 p-2"
+      className="rounded-[16px] m-5 p-2 cursor-default"
       style={{ background: bgcoloring, width: "fit-content" }}
     >
       <div className="flex items-center justify-center">

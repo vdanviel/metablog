@@ -3,6 +3,7 @@
 
 const utils = {
 
+    //função que valida campos obrigatorios.. ELE FUNCIONA COM VALORES RESPECTIVAMENTE.
     validate(data, requiredFields) {
         const missingFields = [];
 
@@ -29,7 +30,7 @@ const utils = {
         });
 
         if (missingFields.length > 0) {
-            return `Os campos (${missingFields.join(', ')}) são obrigatórios.`
+            return missingFields;
         }
     
         return true;
