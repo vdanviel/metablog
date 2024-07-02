@@ -9,6 +9,7 @@ import('./styles/general.css')
 import Home from "./main/home.jsx";
 import Register from "./main/register.jsx";
 import Login from "./main/login.jsx";
+import Feed from "./main/feed.jsx";
 
 //pinned components
 import Header from "./components/main/navbar.jsx";
@@ -31,7 +32,11 @@ const modifiedrouter = createBrowserRouter([
   {
     path: "sign-in",
     element: <Login/>,
-  }
+  },
+  {
+    path: "feed",
+    element: <Feed/>,
+  },
 ]);
 
 const user = localStorage.getItem('user');

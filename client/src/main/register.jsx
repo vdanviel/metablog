@@ -20,6 +20,7 @@ export default function Register() {
         setBtnContent("Loading...");
         setBtnActivate(false);
 
+        document.querySelector('#error').innerText = "";
         let name = document.querySelector("#username");
         let email = document.querySelector("#emailAddress");
         let password = document.querySelector("#password");
@@ -103,7 +104,7 @@ export default function Register() {
 
             }else{
 
-              navigate("/sign-in", {state: {name: name.value, email: email.value}});
+              navigate("/sign-in", {state: {email: email.value}});
 
             }
 

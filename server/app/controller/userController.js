@@ -38,7 +38,7 @@ const controller = {
             if (existed.length > 0) {
                 return {
                     status: false,
-                    text: "Alguém já utiliza o email.",
+                    text: "Someone uses this email already.",
                 };
             }
 
@@ -58,7 +58,7 @@ const controller = {
             if (!registered) {
                 return {
                     status: false,
-                    text: "Não foi possível cadastrar usuário.",
+                    text: "It wasn't possible to save your data in ours databases. Try again later.",
                 };
             }
 
@@ -85,7 +85,7 @@ const controller = {
             if (!user) {
                 return {
                     status: false,
-                    text: "Usuário não encontrado."
+                    text: "User not found."
                 };
             }
     
@@ -95,7 +95,7 @@ const controller = {
             if (!updated) {
                 return {
                     status: false,
-                    text: "Não foi possível salvar foto em nossas coletas de dados.",
+                    text: "It wasn't possible to save the photo in ours databases. Try again later.",
                 };
             }
 
@@ -133,15 +133,15 @@ const controller = {
                     
                     return {
                         status: true,
-                        text: "Autenticação realizada com sucesso!",
-                        data: existed
+                        text: "Authenticated sucessfully.",
+                        user: JSON.stringify(existed)
                     };
 
                 }else{
 
                     return {
                         status: false,
-                        text: "A senha está incorreta.",
+                        text: "The password is incorrect.",
                     };
 
                 }
@@ -149,7 +149,7 @@ const controller = {
             }else{
                 return {
                     status: false,
-                    text: "Email inválido.",
+                    text: "This email doesn't exist on Metablog.",
                 };
             }
 

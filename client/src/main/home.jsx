@@ -74,7 +74,7 @@ export default function Home() {
     );
 
      // Define size based on window width
-     const iconSize = window.innerWidth > 600 ? 100 : 65; // Example logic
+     const iconSize = window.innerWidth > 600 ? 75 : 65; // Example logic
 
     const html = (
 

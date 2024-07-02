@@ -11,8 +11,6 @@ const userRouter = express.Router();//definindo o objeto rota..
 
 const config = JSON.parse(JSON.stringify(jsondata));//arquivo de configurações..
 
-
-
 userRouter.post('/register', async (req, res) => {
 
     try {
@@ -37,14 +35,14 @@ userRouter.post('/register', async (req, res) => {
 
             return res.status(200).json({
                 status: true,
-                text: "Você foi registrado com sucesso!"
+                text: "You've been successfully registeres on Metablog."
             });
 
         }else{
 
             return res.status(400).json({
                 status: false,
-                text: "Preencha os campos obrigatórios.",
+                text: "Please fill in the required fields.",
                 missing: validating
             });
 
@@ -91,7 +89,8 @@ userRouter.post('/upload-photo', uploaduserphoto.single('image'), async (req, re
         if (!req.file || !req.body.id) {
             return res.status(400).json({
                 status: false,
-                text: "Os campos (id, image[como arquivo]) são obrigatórios."
+                missing: ['id', 'iamge'],
+                text: "Please fill in the required fields."
             });
         }
 
@@ -111,7 +110,7 @@ userRouter.post('/upload-photo', uploaduserphoto.single('image'), async (req, re
 
         return res.status(200).json({
             status: true,
-            text: "Sua foto de perfil foi salva com sucesso!"
+            text: "Your profile picture was sucessfully saved!"
         });
 
     } catch (error) {
@@ -152,7 +151,8 @@ userRouter.post('/login', async (req, res) => {
 
             return res.status(400).json({
                 status: false,
-                text: validating
+                text: "Please fill in the required fields.",
+                missing: validating
             });
 
         }
