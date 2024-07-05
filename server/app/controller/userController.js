@@ -28,18 +28,24 @@ const controller = {
         try {
 
             //verificar se existe um email com o mesmo valor..
-
-            let existed_email = {"email": email};
-
-            let existed = await userModelInstance.find(existed_email);
-
-            await existed;
+            let emailexisted = await userModelInstance.find({"email": email});
 
             // Verificar se algum usuário foi encontrado
-            if (existed.length > 0) {
+            if (emailexisted.length > 0) {
                 return {
                     status: false,
-                    text: "Someone uses this email already.",
+                    text: "Someone uses this Email already.",
+                };
+            }
+
+            //verificar se existe um nick com o mesmo valor..
+            let nickexisted = await userModelInstance.find({"nick": nick});
+
+            // Verificar se algum usuário foi encontrado
+            if (nickexisted.length > 0) {
+                return {
+                    status: false,
+                    text: "Someone uses this Nickname already.",
                 };
             }
 

@@ -22,6 +22,31 @@ userRouter.post('/register', async (req, res) => {
         console.log(req.body);
 
         if (validating === true) {
+
+            // Validação do nome
+            let not_allowed_characters_name = /[!@#$%¨&*()+\-_0-9]/;
+
+            if (not_allowed_characters_name.test(req.body.name)) {
+                return res.status(400).json({
+                    status: false,
+                    text: 'O nome não pode conter caracteres especiais ou números.'
+                });
+            }
+
+            //VALIDA NICKNAME
+            //verifica se há espaço ou qualquer caractere menos _
+            let not_allowed_caracters_nick = /[ !@#$%¨&*()+-]/g;
+
+            if (not_allowed_caracters_nick.test(req.body.nick) == true) {
+                
+                return res.status(400).json({
+                    status: false,
+                    text: 'Nickname cannot contain spaces or special caracters.'
+                });
+
+            }
+
+
             let registered = await controller.register_user(req.body.name, req.body.nick, req.body.email, req.body.bio, req.body.password);
 
             if (registered.status == false) {

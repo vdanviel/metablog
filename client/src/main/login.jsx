@@ -127,7 +127,7 @@ export default function Login(){
                             type="email"
                             placeholder="Email Address"
                             id='inemail'
-                            value={email}
+                            defaultValue={email}
                         />
                         <small id="error_email" className="font-bold text-[#f01313]"></small>
                     </div>
@@ -138,7 +138,7 @@ export default function Login(){
                             type="password"
                             id='inpassword'
                             placeholder="Make sure to remember it"
-                            value=""
+                            defaultValue=""
                         />
                         <small id="error_password" className="font-bold text-[#f01313]"></small>
                     </div>
