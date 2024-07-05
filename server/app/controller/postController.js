@@ -21,7 +21,7 @@ const controller = {
                 };
             }
 
-            //buscando somente os posts dos usuarios que ele segue..
+            //buscando somente os posts dos usuarios que elx segue..
             const posts = await PostModelInstance.find({"user_id": {"$in": user.following } });
 
             // Os posts que ele pode ver
