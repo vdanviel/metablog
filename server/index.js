@@ -1,6 +1,7 @@
 //definindo variaveis..
 import express from 'express';
 import userRouter from './app/router/userRouter.js';
+import postRouter from './app/router/postRouter.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -33,6 +34,10 @@ server.use((request, response, next) => {
 //ROTAS
 //user
 server.use('/user', userRouter);
+
+//postagens
+server.use('/post', postRouter);
+
 
 //LIGANDO SERVIDOR
 //server.listen() - liga servidor indicando qual porta o servidor vai escutar..

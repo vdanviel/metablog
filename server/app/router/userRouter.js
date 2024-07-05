@@ -15,14 +15,14 @@ userRouter.post('/register', async (req, res) => {
 
     try {
 
-        let required = ['name', 'email',  'password', 'bio'];
+        let required = ['name', 'nick', 'email',  'password', 'bio'];
 
         let validating = utils.validate(req.body,required);
 
         console.log(req.body);
 
         if (validating === true) {
-            let registered = await controller.register_user(req.body.name, req.body.email, req.body.bio, req.body.password);
+            let registered = await controller.register_user(req.body.name, req.body.nick, req.body.email, req.body.bio, req.body.password);
 
             if (registered.status == false) {
                 
@@ -82,14 +82,14 @@ const storage = multer.diskStorage({
 const uploaduserphoto = multer({ storage: storage });
 
 // Rota para upload de imagem
-userRouter.post('/upload-photo', uploaduserphoto.single('image'), async (req, res) => {
+userRouter.patch('/upload-photo', uploaduserphoto.single('image'), async (req, res) => {
 
     try {
 
         if (!req.file || !req.body.id) {
             return res.status(400).json({
                 status: false,
-                missing: ['id', 'iamge'],
+                missing: ['id', 'image'],
                 text: "Please fill in the required fields."
             });
         }
@@ -168,6 +168,53 @@ userRouter.post('/login', async (req, res) => {
         });
     }
 
+});
+
+userRouter.patch('/follow', async (req, res) => {
+
+    try {
+
+        let required = ['id_user', 'id_user_follow'];
+
+        let validating = utils.validate(req.body,required);
+
+        if(validating == true){
+
+            const follow = await controller.follow(req.body.id_user, req.body.id_user_follow);
+
+            if (follow.status == false) {
+                
+                return res.status(400).json({follow});
+
+            }else{
+
+                return res.status(200).json({follow});
+
+            }
+
+        }else{
+
+            return res.status(400).json({
+                status: false,
+                text: "Please fill in the required fields.",
+                missing: validating
+            });
+
+        }
+
+    } catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+            error: {
+                message: error.message,
+                stack: error.stack
+            }
+        });
+    }
+
 })
+
+userRouter
 
 export default userRouter;
