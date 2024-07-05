@@ -24,18 +24,22 @@ const modifiedrouter = createBrowserRouter([
   {
     path: "/",
     element: <Home/>,
+    title: "Metablog - Welcome!"
   },
   {
     path: "sign-up",
     element: <Register/>,
+    title: "Metablog - Sign-up your account"
   },
   {
     path: "sign-in",
     element: <Login/>,
+    title: "Metablog - Sign-in your account"
   },
   {
     path: "feed",
     element: <Feed/>,
+    title: "Metablog - Home"
   },
 ]);
 

@@ -127,7 +127,7 @@ export default function Login(){
                             type="email"
                             placeholder="Email Address"
                             id='inemail'
-                            defaultValue={email}
+                            value={email}
                         />
                         <small id="error_email" className="font-bold text-[#f01313]"></small>
                     </div>
@@ -138,6 +138,7 @@ export default function Login(){
                             type="password"
                             id='inpassword'
                             placeholder="Make sure to remember it"
+                            value=""
                         />
                         <small id="error_password" className="font-bold text-[#f01313]"></small>
                     </div>
@@ -155,7 +156,7 @@ export default function Login(){
 
             <div className="flex items-center justify-center py-4 text-center bg-gray-50 rounded-b-[16px]">
                 <span className="text-sm text-gray-600">Don&apos;t have an account? </span>
-                <a href="#" className="mx-2 text-sm font-bold text-blue-500 hover:underline">Register</a>
+                <a className="cursor-pointer mx-2 text-sm font-bold text-blue-500 hover:underline" onClick={() => { navigate("/sign-up"); }} >Register</a>
             </div>
         </div>
     );

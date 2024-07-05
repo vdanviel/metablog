@@ -17,12 +17,14 @@ export default function Register() {
 
         event.preventDefault();
 
+        document.querySelector('#error').innerText = "";
         setBtnContent("Loading...");
         setBtnActivate(false);
 
-        document.querySelector('#error').innerText = "";
+        
         let name = document.querySelector("#username");
         let email = document.querySelector("#emailAddress");
+        let nick = document.querySelector("#nick");
         let password = document.querySelector("#password");
         let bio = document.querySelector("#bio");
 
@@ -34,6 +36,7 @@ export default function Register() {
                 },
                 body: JSON.stringify({
                     name: name.value,
+                    nick: nick.value,
                     email: email.value,
                     password: password.value,
                     bio: bio.value
@@ -66,6 +69,13 @@ export default function Register() {
   
                       break;
   
+                    case 'nick':
+                      
+                      nick.classList.add('border-red-400');
+                      document.querySelector("#error_nick").innerText = "Nickname is required.";
+  
+                      break;
+
                     case 'email':
                       
                       email.classList.add('border-red-400');
@@ -129,8 +139,9 @@ export default function Register() {
 
         <form className="mt-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+
             <div>
-              <label htmlFor="username" className="text-gray-700">Name</label>
+              <label htmlFor="username" className="text-gray-700">Full name</label>
               <input
                 id="username"
                 placeholder="Jennifer Alexander"
@@ -138,6 +149,25 @@ export default function Register() {
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none"
               />
               <small id="error_name" className="font-bold text-[#f01313]"></small>
+            </div>
+
+            <div>
+              <label htmlFor="nick" className="text-gray-700">Nickname</label>
+              
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  @
+                </div>
+                <input
+                  id="nick"
+                  placeholder="jejeale"
+                  type="text"
+                  className="block w-full pl-10 px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none"
+                  maxLength="15"
+                />
+            </div>
+
+              <small id="error_nick" className="font-bold text-[#f01313]"></small>
             </div>
   
             <div>
