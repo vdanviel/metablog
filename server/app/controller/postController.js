@@ -48,8 +48,6 @@ const controller = {
                 
             }
 
-            console.log(result);
-
             // Os posts que ele pode ver
             return {
                 status: true,
