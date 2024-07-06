@@ -23,8 +23,8 @@ export default function Register() {
 
         
         let name = document.querySelector("#username");
-        let email = document.querySelector("#emailAddress");
         let nick = document.querySelector("#nick");
+        let email = document.querySelector("#emailAddress");
         let password = document.querySelector("#password");
         let bio = document.querySelector("#bio");
 
@@ -49,6 +49,8 @@ export default function Register() {
               
               name.classList.remove('border-red-400');
               document.querySelector("#error_name").innerText = "";
+              nick.classList.remove('border-red-400');
+              document.querySelector("#error_nick").innerText = "";
               email.classList.remove('border-red-400');
               document.querySelector("#error_email").innerText = "";
               password.classList.remove('border-red-400');
@@ -113,7 +115,9 @@ export default function Register() {
               }
 
             }else{
+              //registrado..
 
+              //envia para logar..
               navigate("/sign-in", {state: {email: email.value}});
 
             }
@@ -130,16 +134,17 @@ export default function Register() {
     }
 
     return (
-        <section className="max-w-4xl p-6 mx-auto bg-white rounded-[16px] p-5 m-5">
+      <section className="max-w-4xl p-3 lg:mx-auto bg-white rounded-[16px] lg:p-5 lg:m-5">
 
-        <div className="flex justify-center mx-auto">
-          <FaRocketchat size={50} color="#3b82f6" title="metablog"/>
-        </div>
-        <p className="text-slate-400 text-center">Create your account on metablog. Wa wa.</p>
+          <div className="flex justify-center">
+            <a className="cursor-pointer mx-2 text-sm font-bold text-blue-500 hover:underline" onClick={() => { navigate("/"); }}>
+              <FaRocketchat size={50} color="#3b82f6" title="metablog"/>
+            </a>
+          </div>
+          <p className="text-slate-400 text-center my-2">Create your account on metablog. Wa wa.</p>
 
-        <form className="mt-6">
+        <form className="lg:mt-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-
             <div>
               <label htmlFor="username" className="text-gray-700">Full name</label>
               <input
@@ -148,12 +153,11 @@ export default function Register() {
                 type="text"
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none"
               />
-              <small id="error_name" className="font-bold text-[#f01313]"></small>
+              <small id="error_name" className="font-bold text-red-600"></small>
             </div>
 
             <div>
               <label htmlFor="nick" className="text-gray-700">Nickname</label>
-              
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   @
@@ -165,11 +169,10 @@ export default function Register() {
                   className="block w-full pl-10 px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none"
                   maxLength="15"
                 />
+              </div>
+              <small id="error_nick" className="font-bold text-red-600"></small>
             </div>
 
-              <small id="error_nick" className="font-bold text-[#f01313]"></small>
-            </div>
-  
             <div>
               <label htmlFor="emailAddress" className="text-gray-700">Email</label>
               <input
@@ -178,7 +181,7 @@ export default function Register() {
                 type="email"
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none"
               />
-              <small id="error_email" className="font-bold text-[#f01313]"></small>
+              <small id="error_email" className="font-bold text-red-600"></small>
             </div>
 
             <div>
@@ -189,9 +192,9 @@ export default function Register() {
                 placeholder="Use a strong password"
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none"
               />
-              <small id="error_password" className="font-bold text-[#f01313]"></small>
+              <small id="error_password" className="font-bold text-red-600"></small>
             </div>
-  
+
             <div className="sm:col-span-2">
               <label htmlFor="bio" className="text-gray-700">Biography</label>
               <textarea
@@ -200,19 +203,33 @@ export default function Register() {
                 style={{ height: "100px" }}
                 placeholder="Tell us about yourself..."
               />
-              <small id="error_bio" className="font-bold text-[#f01313]"></small>
+              <small id="error_bio" className="font-bold text-red-600"></small>
             </div>
 
-            <a className="cursor-pointer" onClick={() => { navigate("/sign-in"); }} >Already have an account?</a>
-
-            <div className="flex justify-end items-center sm:col-span-2 mt-6">
-              <p id="error" className="font-bold text-[#f01313]"></p>
-
-              <Button activate={btnActivateState} bg_color="#3b82f6" hover_bg_color="#4f65ff" font_color="white" content={btnContentState} txtsize="16px" type="submit" onClick={register_user} />
+            <div className="text-sm sm:col-span-2">
+              <a className="cursor-pointer text-blue-500 hover:underline" onClick={() => { navigate("/sign-in"); }}>Already have an account?</a>
             </div>
+
+            <div className="flex justify-end items-center flex-col lg:flex-row sm:col-span-2" >
+              <p id="error" className="font-bold text-red-600 w-56 text-center"></p>
+
+              <Button
+                activate={btnActivateState}
+                bg_color="#3b82f6"
+                hover_bg_color="#4f65ff"
+                font_color="white"
+                content={btnContentState}
+                txtsize="16px"
+                type="submit"
+                onClick={register_user}
+              />
+              
+            </div>
+
           </div>
         </form>
       </section>
+
     );
 
 }

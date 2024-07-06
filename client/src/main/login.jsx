@@ -42,8 +42,6 @@ export default function Login(){
             
             const data = await response.json();
 
-            console.log(data);
-
             if (data.status == false) {
               
               document.querySelector('#error').innerText = "";
@@ -89,9 +87,9 @@ export default function Login(){
 
             }else{
 
-                localStorage.setItem('user', data.user);
+              localStorage.setItem('user', data.user);
 
-              navigate("/feed");
+              window.location = window.location.origin + "/feed";
 
             }
 
@@ -109,13 +107,14 @@ export default function Login(){
     return(
         <div className="w-full max-w-sm mx-auto overflow-hidden   ">
 
-            {email && <SuccessAlert title="Welcome!" text="You've been successfully registered." />}
+            {email && <SuccessAlert title="Welcome!" text="You've been successfully registered. We've sended you an email, sign-up now and explore Metablog!" />}
             
-
             <div className="px-6 py-4 bg-white rounded-t-[16px]">
 
                 <div className="flex justify-center mb-5 mx-auto">
-                    <FaRocketchat size={50} color="#3b82f6" title="metablog"/>
+                    <a className="cursor-pointer mx-2 text-sm font-bold text-blue-500 hover:underline" onClick={() => { navigate("/"); }} >
+                      <FaRocketchat size={50} color="#3b82f6" title="metablog"/>
+                    </a>
                 </div>
 
                 <p className="mt-1 text-center text-gray-500">Welcome back! Login into your account.</p>
@@ -138,12 +137,12 @@ export default function Login(){
                             type="password"
                             id='inpassword'
                             placeholder="Make sure to remember it"
-                            defaultValue=""
+                            aria-autocomplete=''
                         />
                         <small id="error_password" className="font-bold text-[#f01313]"></small>
                     </div>
 
-                    <p id="error" className="font-bold text-[#f01313] mt-4"></p>
+                    <p id="error" className="font-bold text-[#f01313] mt-4 text-center"></p>
 
                     <div className="flex items-center justify-between mt-4">
                         <a href="#" className="text-sm text-gray-600 hover:text-gray-500">Forget Password?</a>

@@ -81,22 +81,19 @@ postRouter.post('/', upload.array('medias', 10), async (req, res) => {
 });
 
 //rota feed
-postRouter.get('/all', async (req, res) => {
+postRouter.get('/all/:id_user', async (req, res) => {
     
     try {
         
         let required = ['id_user'];
 
-        let validating = utils.validate(req.body,required);
+        let validating = utils.validate(req.params,required);
 
         if(validating == true){
 
-            const feed = await controller.all(req.body.id_user);
+            const feed = await controller.all(req.params.id_user);
 
-            return res.status(200).json({
-                status: true,
-                feed: feed
-            });
+            return res.status(200).json(feed);
 
         }else{
 

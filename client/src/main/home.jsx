@@ -40,9 +40,9 @@ export default function Home() {
       
       <div>
 
-        <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0">
+        <div className="flex flex-row items-center lg:space-x-4">
 
-          <button onClick={signin} className="flex flex-col items-center  lg:flex-row lg:items-center">
+          <button onClick={signin} className="flex flex-col items-center lg:items-center">
 
             <div className="flex justify-center flex-col items-center rounded-lg p-4  hover:shadow-lg transition-shadow">
               
@@ -69,8 +69,6 @@ export default function Home() {
 
       </div>
 
-
-
     );
 
      // Define size based on window width
@@ -93,6 +91,7 @@ export default function Home() {
               <img width="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="react"/>
               <img width="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" alt="nodejs"/>
               <img width="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" alt="expressjs"/>
+              <img width="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg" alt="mongo"/>
 
           </div>
 

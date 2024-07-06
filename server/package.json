@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vdanviel/bookroom-nodejs-api.git"
+    "url": "git+https://github.com/vdanviel/metablog.git"
   },
   "author": "vdanviel",
   "license": "SEE LICENCE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/vdanviel/bookroom-nodejs-api/issues"
+    "url": "https://github.com/vdanviel/metablog/issues"
   },
-  "homepage": "https://github.com/vdanviel/bookroom-nodejs-api#readme",
+  "homepage": "https://github.com/vdanviel/metablog#readme",
   "dependencies": {
     "crypto-js": "^4.2.0",
     "express": "^4.19.2",

@@ -24,8 +24,38 @@ const controller = {
             //buscando somente os posts dos usuarios que elx segue..
             const posts = await PostModelInstance.find({"user_id": {"$in": user.following } });
 
+            const result = [];
+
+            for (const post of posts) {
+
+                try {
+                    const user = await userModelInstance.findbyid(post.user_id);
+                    
+                    const obj = {
+                        "_id": post._id,
+                        "user": user,
+                        "content": post.content,
+                        "media": post.media,
+                        "likes": post.likes,
+                        "comments": post.comments,
+                        "created_at": post.created_at
+                    };
+            
+                    result.push(obj);
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                }
+                
+            }
+
+            console.log(result);
+
             // Os posts que ele pode ver
-            return posts;
+            return {
+                status: true,
+                user: user,
+                feed: result,
+            };
     
         } catch (error) {
             return {

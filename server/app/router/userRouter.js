@@ -15,11 +15,9 @@ userRouter.post('/register', async (req, res) => {
 
     try {
 
-        let required = ['name', 'nick', 'email',  'password', 'bio'];
+        let required = ['name', 'nick', 'email', 'password', 'bio'];
 
         let validating = utils.validate(req.body,required);
-
-        console.log(req.body);
 
         if (validating === true) {
 
@@ -29,7 +27,7 @@ userRouter.post('/register', async (req, res) => {
             if (not_allowed_characters_name.test(req.body.name)) {
                 return res.status(400).json({
                     status: false,
-                    text: 'O nome não pode conter caracteres especiais ou números.'
+                    text: 'Name cannot cointain any special caracters.'
                 });
             }
 
@@ -41,11 +39,10 @@ userRouter.post('/register', async (req, res) => {
                 
                 return res.status(400).json({
                     status: false,
-                    text: 'Nickname cannot contain spaces or special caracters.'
+                    text: 'Nickname cannot contain spaces or special caracters but underline.'
                 });
 
             }
-
 
             let registered = await controller.register_user(req.body.name, req.body.nick, req.body.email, req.body.bio, req.body.password);
 
@@ -60,7 +57,7 @@ userRouter.post('/register', async (req, res) => {
 
             return res.status(200).json({
                 status: true,
-                text: "You've been successfully registeres on Metablog."
+                text: "You've been successfully registered on Metablog."
             });
 
         }else{
@@ -90,6 +87,48 @@ userRouter.post('/register', async (req, res) => {
     }
 
 });
+
+userRouter.get('/find/:id', async (req, res) => {
+
+    try {
+
+        let required = ['id'];
+
+        let validating = utils.validate(req.params,required);
+
+        if (validating === true) {
+
+            const user = await controller.find(req.params.id)
+
+            return res.status(200).json(user);
+
+        }else{
+
+            return res.status(400).json({
+                status: false,
+                text: "Please fill in the required fields.",
+                missing: validating
+            });
+
+        }
+
+    } catch (error) {
+        
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+            error: {
+                message: error.message,
+                stack: error.stack,
+                file: error.fileName, // Informações do arquivo onde ocorreu o erro (opcional)
+                line: error.lineNumber, // Número da linha onde ocorreu o erro (opcional)
+                column: error.columnNumber, // Número da coluna onde ocorreu o erro (opcional)
+            }
+        });
+
+    }
+
+})
 
 //configurando envio da foto de perfill..
 const userPhoto = uuidv4() + ".jpeg";//nome aleatórios para arquivos..

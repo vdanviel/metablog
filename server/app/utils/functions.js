@@ -1,5 +1,7 @@
-//imported libs..
+import nodemailer from "nodemailer";
+import jsondata from "../../config.json" assert {type: "json"};
 
+const config = JSON.parse(JSON.stringify(jsondata));
 
 const utils = {
 
@@ -34,8 +36,37 @@ const utils = {
         }
     
         return true;
-    }
+    },
 
+    //envia email por nodemailer..
+    async send_email(email, children, name) {
+        try {
+
+            const transport = nodemailer.createTransport({
+                host: "smtp.gmail.com",
+                port: 587,
+                secure: false, // Use `true` for port 465, `false` for all other ports
+                auth: {
+                    user: config.mail.name,
+                    pass: config.mail.password,
+                },
+            });
+
+            const info = await transport.sendMail({
+                from: '"Metablog" <no-reply@metablog.com>',
+                to: email,
+                subject: `${name}! Welcome to Metablog.`,
+                html: children
+            });
+
+            console.log('Email sended! Message ID: ', info.messageId);
+            return true;
+
+        } catch (error) {
+            console.error('Error during sending: ', error);
+            return false;
+        }
+    }
 }
 
 export {utils}

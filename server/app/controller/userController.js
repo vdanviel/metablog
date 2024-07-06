@@ -1,4 +1,8 @@
+import path from "path";
+import fs from "node:fs";
 import userModelInstance from "../model/userModel.js";
+import { utils } from "../utils/functions.js";
+
 import jsondata from "../../config.json" assert {type: "json"};
 
 const config = JSON.parse(JSON.stringify(jsondata));
@@ -21,6 +25,21 @@ const controller = {
                 erro: error
             }
         }
+    },
+
+    async find(id){
+
+        try {
+            const user = await userModelInstance.findbyid(id);
+            return user;
+        } catch (error) {
+            return {
+                status: false,
+                text: "Internal server error on controller/user.",
+                erro: error
+            }
+        }
+        
     },
 
     async register_user(name, nick, email, bio, password) {
@@ -71,6 +90,20 @@ const controller = {
                     text: "It wasn't possible to save your data in ours databases. Try again later.",
                 };
             }
+
+            //enviando email de boas vindas..
+            //html de boas vindas
+            await fs.readFile(path.dirname('../server/app/mail/templates/welcome.html') + '/welcome.html', 'utf8', (err, data) => {//procurando o arquivo html para a leitura com fs do nodejs e o path do node js para retornar o DIRETORIO raiz de um arquivo.
+
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+                //enviando..
+                utils.send_email(email, data.toString(), name);
+            });
+
 
             return registered;
 
@@ -144,7 +177,7 @@ const controller = {
                     return {
                         status: true,
                         text: "Authenticated sucessfully.",
-                        user: JSON.stringify(existed)
+                        user: JSON.stringify(existed[0])
                     };
 
                 }else{
