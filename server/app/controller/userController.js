@@ -1,16 +1,17 @@
-import path from "path";
-import fs from "node:fs";
-import {userModelInstance, usercoll} from "../model/userModel.js";
-import { utils } from "../utils/functions.js";
-
-import jsondata from "../../config.json" assert {type: "json"};
-
-const config = JSON.parse(JSON.stringify(jsondata));
-
-//libs..
+//libs/sdks..
 import CryptoJS from "crypto-js";
 import { ObjectId } from "mongodb";
+import path from "path";
+import fs from "node:fs";
 
+//modules..
+import {userModelInstance, usercoll} from "../model/userModel.js";
+import {tokenModelInstance, tokencoll} from "../model/tokenModel.js";
+import { utils } from "../utils/functions.js";
+
+//secure data
+import jsondata from "../../config.json" assert {type: "json"};
+const config = JSON.parse(JSON.stringify(jsondata));
 
 const controller = {
 
@@ -101,7 +102,7 @@ const controller = {
                 }
 
                 //enviando..
-                utils.send_email(email, data.toString(), name);
+                utils.send_email(email, data.toString(), `Welcome to Metablog ${name}!`);
             });
 
 
@@ -275,7 +276,78 @@ const controller = {
 
     },
 
+    async resetPassword(id_user, type, token, newPassword) {
+
+        try {
+          // Buscar o token na coleção
+          const tokenData = await tokencoll.findOne({"token": token });
     
+          if (!tokenData) {
+            return {
+              status: false,
+              text: "Invalid or expired token."
+            };
+          }
+
+          if (tokenData.tokenable_id !== id_user, tokenData.tokenable_type !== type) {
+            return {
+                status: false,
+                text: "Invalid token."
+              };
+          }
+    
+          const now = new Date();
+          if (new Date(tokenData.expires_at) < now) {
+            return {
+              status: false,
+              text: "Token has expired."
+            };
+          }
+    
+          // Verificar se o usuário existe
+          const user = await userModelInstance.findbyid(tokenData.tokenable_id);
+
+          if (!user) {
+            return {
+              status: false,
+              text: "User not found."
+            };
+          }
+    
+          // Encrypt the new password
+          let cipherPassword = CryptoJS.AES.encrypt(newPassword, config.crytokey).toString();
+    
+          // Atualizar a senha do usuário
+          const updated = await userModelInstance.update(id_user, { $set: { "password": cipherPassword } });
+
+          if (!updated) {
+            return {
+              status: false,
+              text: "It wasn't possible to update the password. Try again later.",
+            };
+          }
+    
+          // Remover o token da coleção após a atualização da senha***
+          await tokenModelInstance.delete({"token": token});
+    
+          return {
+            status: true,
+            text: "Password updated successfully."
+          };
+
+        } catch (error) {
+
+          return {
+            status: false,
+            text: "Internal server error on controller/user.",
+            error: {
+              message: error.message,
+              stack: error.stack
+            }
+          };
+          
+        }
+    }
 
 };
 

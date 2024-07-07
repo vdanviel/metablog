@@ -277,7 +277,42 @@ userRouter.patch('/follow', async (req, res) => {
         });
     }
 
-})
+});
+
+userRouter.patch('/change-password', async (req, res) => {
+
+    try {
+
+        let required = ['id_user', 'type', 'token', 'password'];
+
+        let validating = utils.validate(req.body,required);
+
+        if(validating == true){
+
+            return res.status(200).json(await controller.resetPassword(req.body.id_user, req.body.type, req.body.token, req.body.password));
+
+        }else{
+
+            return res.status(400).json({
+                status: false,
+                text: "Please fill in the required fields.",
+                missing: validating
+            });
+
+        }
+
+    } catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+            error: {
+                message: error.message,
+                stack: error.stack
+            }
+        });
+    }
+
+});
 
 userRouter
 

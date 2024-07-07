@@ -38,8 +38,18 @@ const utils = {
         return true;
     },
 
+    generate_random_number(length) {
+        let random = '';
+    
+        for (let i = 0; i < length; i++) {
+            random += Math.floor(Math.random() * 10);
+        }
+    
+        return random;
+    },
+
     //envia email por nodemailer..
-    async send_email(email, children, name) {
+    async send_email(email, children, sub) {
         try {
 
             const transport = nodemailer.createTransport({
@@ -55,7 +65,7 @@ const utils = {
             const info = await transport.sendMail({
                 from: '"Metablog" <no-reply@metablog.com>',
                 to: email,
-                subject: `${name}! Welcome to Metablog.`,
+                subject: sub,
                 html: children
             });
 

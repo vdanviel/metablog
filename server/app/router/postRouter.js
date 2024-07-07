@@ -1,16 +1,19 @@
 import express from "express";
-import controller from '../controller/postController.js';
-import jsondata from "../../config.json" assert {type: "json"};
 
-//funcs..
+//secure data..
+import jsondata from "../../config.json" assert {type: "json"};
+const config = JSON.parse(JSON.stringify(jsondata));//arquivo de configurações..
+
+//modules..
 import { utils } from "../utils/functions.js";
+import controller from '../controller/postController.js';
+
+//libs..
 import multer from 'multer';
 import path from "node:path";
 import { v4 as uuidv4 } from 'uuid';
 
 const postRouter = express.Router();//definindo o objeto rota..
-
-const config = JSON.parse(JSON.stringify(jsondata));//arquivo de configurações..
 
 //configurando o envio dos arquivos..
 const storage = multer.diskStorage({

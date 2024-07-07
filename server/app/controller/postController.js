@@ -1,10 +1,10 @@
+//libs/sdk..
 import mongodb from "mongodb";
 
+//modules..
 import {PostModelInstance, postcoll} from "../model/postModel.js";
 import {userModelInstance, usercoll} from "../model/userModel.js";
-import jsondata from "../../config.json" assert {type: "json"};
 
-const config = JSON.parse(JSON.stringify(jsondata));
 
 const controller = {
 
