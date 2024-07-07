@@ -116,4 +116,4 @@
 
     const userModelInstance = new UserModel(usercoll);
 
-    export default userModelInstance;
+    export {userModelInstance, usercoll};

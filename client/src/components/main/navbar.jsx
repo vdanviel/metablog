@@ -61,7 +61,7 @@ export default function Navbar(){
           <div className="hidden lg:flex space-x-4">
             <a className="font-bold" href="/profile">Profile</a>
             <a className="font-bold" href="/about">Info</a>
-            <a className="font-bold" onClick={logOut}>Sign Out</a>
+            <a className="font-bold cursor-pointer" onClick={logOut}>Sign Out</a>
           </div>
 
         </div>

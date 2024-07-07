@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "node:fs";
-import userModelInstance from "../model/userModel.js";
+import {userModelInstance, usercoll} from "../model/userModel.js";
 import { utils } from "../utils/functions.js";
 
 import jsondata from "../../config.json" assert {type: "json"};

@@ -26,9 +26,13 @@ class PostModel {
             let result = null;
 
             if (shields == null) {
+
                 result = await this.collection.find(query).toArray();
+
             }else{
+
                 result = await this.collection.find(query).project(shields).toArray();//{ item: 1, status: 1, _id: 0 }
+
             }
 
             return result;
@@ -122,4 +126,4 @@ class PostModel {
 
 const PostModelInstance = new PostModel(postcoll);
 
-export default PostModelInstance;
+export {PostModelInstance, postcoll};

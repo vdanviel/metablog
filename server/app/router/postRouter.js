@@ -81,17 +81,17 @@ postRouter.post('/', upload.array('medias', 10), async (req, res) => {
 });
 
 //rota feed
-postRouter.get('/all/:id_user', async (req, res) => {
+postRouter.get('/all/:id_user/:limit', async (req, res) => {
     
     try {
         
-        let required = ['id_user'];
+        let required = ['id_user', 'limit'];
 
         let validating = utils.validate(req.params,required);
 
         if(validating == true){
 
-            const feed = await controller.all(req.params.id_user);
+            const feed = await controller.all(req.params.id_user, req.params.limit );
 
             return res.status(200).json(feed);
 

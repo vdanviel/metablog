@@ -1,0 +1,3 @@
+.slick-prev:before, .slick-next:before {
+    color: #3b82f6; /* Mude a cor para o que você quiser */
+}

@@ -1,15 +1,14 @@
 import mongodb from "mongodb";
 
-import PostModelInstance from "../model/postModel.js";
-import userModelInstance from "../model/userModel.js";
+import {PostModelInstance, postcoll} from "../model/postModel.js";
+import {userModelInstance, usercoll} from "../model/userModel.js";
 import jsondata from "../../config.json" assert {type: "json"};
 
 const config = JSON.parse(JSON.stringify(jsondata));
 
 const controller = {
 
-    async all(user_id) {
-
+    async all(user_id, limit) {
         try {
             // Verificar se o usuário existe..
             const user = await userModelInstance.findbyid(user_id);
@@ -20,49 +19,53 @@ const controller = {
                     text: "The user does not exist."
                 };
             }
-
-            //buscando somente os posts dos usuarios que elx segue..
-            const posts = await PostModelInstance.find({"user_id": {"$in": user.following } });
+    
+            // Buscar os posts dos usuários que ele segue, limitado pelo parâmetro 'limit'// Ordena por data de criação, mais recentes primeiro// Adiciona 1 ao limite para verificar se há mais posts
+            const posts = await postcoll.find({ "user_id": { "$in": user.following } }).sort({ created_at: -1 }).limit(Number(limit) + 1).toArray();  
 
             const result = [];
-
+            let more = false;
+    
+            // Se o número de posts retornados for maior que o limite, então há mais posts
+            if (posts.length > limit) {
+                more = true;
+                posts.pop();  // Remove o último post extra que foi usado para verificar a existência de mais posts
+            }
+    
             for (const post of posts) {
-
                 try {
-                    const user = await userModelInstance.findbyid(post.user_id);
-                    
+                    const postUser = await userModelInstance.findbyid(post.user_id);
+    
                     const obj = {
                         "_id": post._id,
-                        "user": user,
+                        "user": postUser,
                         "content": post.content,
                         "media": post.media,
                         "likes": post.likes,
                         "comments": post.comments,
                         "created_at": post.created_at
                     };
-            
+    
                     result.push(obj);
                 } catch (error) {
                     console.error("Error fetching user data:", error);
                 }
-                
             }
-
-            // Os posts que ele pode ver
+    
+            // Retornar os posts que ele pode ver
             return {
                 status: true,
-                user: user,
                 feed: result,
+                more: more
             };
     
         } catch (error) {
             return {
                 status: false,
                 text: "Internal server error on controller/post.",
-                erro: error
+                error: error
             };
         }
-        
     },
 
     async publicate(user_id, content, arr_midia) {
