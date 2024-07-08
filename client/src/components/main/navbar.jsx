@@ -47,7 +47,7 @@ export default function Navbar(){
 
       <Modal onOpen={stateToggle} onClose={closeMenu} title="Options" content={modal_mobile_content} />
 
-      <nav className='absolute inset-x-0 top-0 h-16 px-3 pt-3'>
+      <nav className='absolute inset-x-0 top-0 h-16 px-5 pt-3'>
         <div className="flex justify-between items-center">
 
           <a onClick={sendToMain} className="cursor-pointer text-sm font-bold text-blue-500 hover:underline" >

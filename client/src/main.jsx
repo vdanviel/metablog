@@ -11,6 +11,8 @@ import Home from "./main/home.jsx";
 import Register from "./main/register.jsx";
 import Login from "./main/login.jsx";
 import Feed from "./main/feed.jsx";
+import ForgetPassword from "./main/forget_password.jsx";
+import VerifyForgetPassword from "./main/token_user.jsx";
 
 //pinned components
 import Header from "./components/main/navbar.jsx";
@@ -47,6 +49,29 @@ const modifiedrouter = createBrowserRouter([
     element: (
       <Guest auth={user}>
         <Login/>
+      </Guest>
+    )
+  },
+  {
+    path: "forget-password",
+    element: (
+      <Guest auth={user}>
+        <ForgetPassword/>
+      </Guest>
+    )
+  },
+  {
+    path: "verify/forget-password",
+    element: (
+      <Guest auth={user}>
+        <VerifyForgetPassword/>
+      </Guest>
+    )
+  },
+  {
+    path: "change-password",
+    element: (
+      <Guest auth={user}>
       </Guest>
     )
   },

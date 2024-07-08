@@ -145,7 +145,7 @@ export default function Login(){
                     <p id="error" className="font-bold text-[#f01313] mt-4 text-center"></p>
 
                     <div className="flex items-center justify-between mt-4">
-                        <a href="#" className="text-sm text-gray-600 hover:text-gray-500">Forget Password?</a>
+                        <a href="/forget-password" className="text-sm text-gray-600 hover:text-gray-500">Forget Password?</a>
                         
                         <Button activate={btnActive} bg_color="#3b82f6" hover_bg_color="#4f65ff" font_color="white" content={btnContent} txtsize="16px" type="submit" onClick={login_user} />
 

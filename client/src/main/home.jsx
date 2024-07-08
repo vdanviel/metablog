@@ -84,7 +84,7 @@ export default function Home() {
             made by <img className="w-[100px] lg:w-[200px]" src="https://vdanviel.github.io/img/logo.png"/> vdanviel
           </a>
 
-          <p className="pt-2 text-center mx-[20px]">This platform is a mini social midia made by myself. It uses <i>React</i> and <i>Node.js/Express.js</i>. Wow awesome.</p>
+          <p className="pt-2 text-center mx-[20px]">This platform is a mini social midia made by myself. It uses <i>React</i>, <i>Node.js/Express.js</i> and <i>MongoDB</i>. In any moment click on the logo of the application to get back to menu.</p>
 
           <div className="flex gap-2 mt-4">
 
