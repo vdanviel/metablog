@@ -8,9 +8,10 @@ import {userModelInstance, usercoll} from "../model/userModel.js";
 
 const controller = {
 
-    async all(user_id, limit) {
+    async all(user_id, offset, limit) {
+        
         try {
-            // Verificar se o usuário existe..
+            // Verificar se o usuário existe
             const user = await userModelInstance.findbyid(user_id);
     
             if (!user) {
@@ -18,11 +19,15 @@ const controller = {
                     status: false,
                     text: "The user does not exist."
                 };
-            }
+            }        
+            
+            const posts = await postcoll
+                .find({ "user_id": { "$in": user.following } })
+                .sort({ created_at: -1 })//ordena por data de criação, mais recentes primeiro
+                .skip(Number(offset))// skip - ele pula os documents encontrados ate o document do numero q vc escolher..
+                .limit(Number(limit) + 1) //adiciona 1 ao limite para verificar se há mais posts
+                .toArray();
     
-            // Buscar os posts dos usuários que ele segue, limitado pelo parâmetro 'limit'// Ordena por data de criação, mais recentes primeiro// Adiciona 1 ao limite para verificar se há mais posts
-            const posts = await postcoll.find({ "user_id": { "$in": user.following } }).sort({ created_at: -1 }).limit(Number(limit) + 1).toArray();  
-
             const result = [];
             let more = false;
     
@@ -66,7 +71,7 @@ const controller = {
                 error: error
             };
         }
-    },
+    },    
 
     async publicate(user_id, content, arr_midia) {
         try {

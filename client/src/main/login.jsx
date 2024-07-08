@@ -10,9 +10,10 @@ import SuccessAlert from "./../components/alert/success.jsx";
 
 export default function Login(){
     const location = useLocation();
-    const email = location.state?.email || '';//esse "?" verifica se existe esse .email, se n existir ele n acessa se n vai dar problema d acesso em null..
-
     const navigate = useNavigate();
+
+    const email = location.state?.email || '';//esse "?" verifica se existe esse .email, se n existir ele n acessa se n vai dar problema d acesso em null..
+    const confirmMessage = location.state?.password_changed || null;
 
     const [btnContent, setBtnContent] = useState('Sign In');
     const [btnActive, setBtnActive] = useState('Sign In');
@@ -108,7 +109,8 @@ export default function Login(){
         <div className="w-full max-w-sm mx-auto overflow-hidden   ">
 
             {email && <SuccessAlert title="Welcome!" text="You've been successfully registered. We've sended you an email, sign-up now and explore Metablog!" />}
-            
+            {confirmMessage && <SuccessAlert title="You've change your password sucessfully." text="You can now no sign-up with your new password."/>}
+
             <div className="px-6 py-4 bg-white rounded-t-[16px]">
 
                 <div className="flex justify-center mb-5 mx-auto">

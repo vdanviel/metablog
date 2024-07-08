@@ -57,10 +57,9 @@ export default function VerifyForgetPassword(){
 
                 document.querySelector('#error').innerHTML = data.text;
 
-
             }else{
 
-                navigate("change-password", {state: {id_user: data.token_data.tokenable_id, type: data.token_data.tokenable_type, token: data.token_data.token}})
+                navigate("/change-password", {state: {id_user: data.token_data.tokenable_id, type: data.token_data.tokenable_type, token: data.token_data.token}})
 
             }
 

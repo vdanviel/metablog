@@ -13,6 +13,7 @@ import Login from "./main/login.jsx";
 import Feed from "./main/feed.jsx";
 import ForgetPassword from "./main/forget_password.jsx";
 import VerifyForgetPassword from "./main/token_user.jsx";
+import ChangePassword from "./main/change_password.jsx";
 
 //pinned components
 import Header from "./components/main/navbar.jsx";
@@ -72,6 +73,7 @@ const modifiedrouter = createBrowserRouter([
     path: "change-password",
     element: (
       <Guest auth={user}>
+        <ChangePassword/>
       </Guest>
     )
   },
@@ -87,9 +89,9 @@ const modifiedrouter = createBrowserRouter([
 
 //criando o ambiente de display (adicionandoRouterProvider)..
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <div>
     {user && <Header />} {/* Renderiza o Header se user estiver definido */}
     <RouterProvider router={modifiedrouter} /> {/*router=(seu objetos de definição de rotas) esse router pede o createBrowserRouter que vc vai usar*/}
-  </React.StrictMode>
+  </div>
 );
 
