@@ -4,7 +4,7 @@ import { FaImage } from "react-icons/fa6";
 
 export default function PublicateForm(props) {
     //props
-    const {id_user ,nick, photo, done} = props;
+    const {id_user, nick, photo, onPublish} = props;
 
     //vars..
     const navigate = useNavigate();
@@ -12,11 +12,10 @@ export default function PublicateForm(props) {
     //state vars..
     const [btnActivate, setbtnDesativate] = useState(true);
     const [btnText, setbtnText] = useState("Write something to publish...");
-    const [Published, setPublished] = useState(done);
     
 
     const [content, setContent] = useState("");
-    const [mediaFiles, setMediaFiles] = useState(null);
+    const [mediaFiles, setMediaFiles] = useState([]);
     const [mediaPreviews, setMediaPreviews] = useState(null);
 
     //local funcs..
@@ -100,34 +99,47 @@ export default function PublicateForm(props) {
         formdata.append("id_user", id_user);
         formdata.append("content", content);
         
+        //adicionando as midias em file..
         mediaFiles.map(file => {
 
             formdata.append("medias", file, "files");
 
         })        
 
-        const response = await fetch("http://localhost:8005/post", 
-            {
-                method: 'POST',
-                mode: "cors",
-                body: formdata,
-                redirect: 'follow'
+        try {
+         
+            const response = await fetch("http://localhost:8005/post", 
+                {
+                    method: 'POST',
+                    mode: "cors",
+                    body: formdata,
+                    redirect: 'follow'
+                }
+            );
+    
+            const data = await response.json();
+    
+            if (data.status == false) {
+                
+                document.querySelector("#textContent").classList.add('border-red-400');
+                document.querySelector("#error_content").innerHTML = data.text
+    
             }
-        );
 
-        const data = await response.json();
-
-        if (data.status == false) {
+        } catch (error) {
             
-            document.querySelector("#textContent").classList.add('border-red-400');
-            document.querySelector("#error_content").innerHTML = data.text
+            console.error(error);
 
         }
 
         document.querySelector('#preview_list').innerHTML = ""
+        setContent("")
 
         setbtnText("Write something to publish...");
         setbtnDesativate(false);
+
+        //dando callback para o Feed.jsx atualizar os posts atuais..
+        onPublish(content, mediaFiles);
 
     };
 

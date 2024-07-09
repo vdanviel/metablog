@@ -89,9 +89,9 @@ const modifiedrouter = createBrowserRouter([
 
 //criando o ambiente de display (adicionandoRouterProvider)..
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <div>
+  <React.Suspense fallback={"LOADING.."} >
     {user && <Header />} {/* Renderiza o Header se user estiver definido */}
     <RouterProvider router={modifiedrouter} /> {/*router=(seu objetos de definição de rotas) esse router pede o createBrowserRouter que vc vai usar*/}
-  </div>
+  </React.Suspense >
 );
 

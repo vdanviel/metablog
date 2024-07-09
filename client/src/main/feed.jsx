@@ -1,5 +1,5 @@
 //react and libs..
-import { useEffect, useState  } from "react";
+import { useEffect, useState, useCallback  } from "react";
 
 //styles..
 import "slick-carousel/slick/slick.css";
@@ -15,7 +15,7 @@ import PublicateForm from "../components/publicate_form.jsx";
 export default function Feed() {
     
     const [statePublications, setPublications] = useState([]);//variavel onde todos os posts ficam
-    const [stateMoreButton, setMoreButton] = useState(null);//variavel onde fica o butão mais posts
+    const [stateMoreButton, setMoreButton] = useState(null);//variavel onde fica o butão mais post
 
     //variaveis delemitadores de quais posts a quais posts se desja..
     const [statePubliOffset, setPubliOffset] = useState(0);//"de"
@@ -40,8 +40,19 @@ export default function Feed() {
         }
     };
 
-    //ao carregar a pagina carrega os posts..
-    useEffect(() => {
+    const renderListPosts = () => {
+        const list = []
+
+        statePublications.map(item => {
+            list.push(item);
+        });
+
+        setPublications(list);
+
+    }
+
+    //variavel que joga os posts no feed e renderiza EM statePublications..
+    const handleFeed = () => {
 
         //recupera os dados e retornar o html de cada card de post..
         const fetchPublications = (data) => {
@@ -200,12 +211,13 @@ export default function Feed() {
                 (TUDO ISSO ACONTECE PARA UMA BOA PERFORMANCE)
             */
 
-            //adiciona todas as publicaçoes atuais na variavel de estado de publicações
+            // Atualiza a variável de estado com a lista mesclada
+
+            console.log(statePublications, publications);
+
             statePublications.push(publications);
 
-            //define as novas publicações na página..
             setPublications(statePublications);
-
         };
 
         //verifica se há mais posts e retorna o html do "more posts"..
@@ -228,7 +240,7 @@ export default function Feed() {
         }
 
         //executa as funções anteriores..
-        const handleFeedScreen = async () => {
+        const handle = async () => {
 
             //requisitando o feed desse usuário..
             const response = await items(user._id, statePubliOffset, statePubliLimit);
@@ -243,27 +255,158 @@ export default function Feed() {
         }
 
         //executa o algoritmo so useefecct
-        handleFeedScreen()
+        handle()
+
+    }
+
+    //ao carregar a pagina carrega os posts..
+    useEffect(() => {
+
+        handleFeed();
+
+        renderListPosts();
 
     }, [statePubliOffset ,statePubliLimit]);
 
-    //renderizando os posts com toda sua logica e condições dadas pelo useeffect
-    const renderPublications = () => {
+    const handleHasNew = useCallback((newPostContent, newPostMidia) => {
 
-        const feed = statePublications.map(posts => {
+        let newPost = null;
 
-            return posts;
+        const handleNewPost = () => {
 
-        })
+            //se o post n ter midia
+            if (newPostMidia.length == 0) {
 
-        return feed
+                // ele da um html sem midia só com o content do post..
+                newPost = (
 
-    };
+                    <div key={0} className="w-[32vh] lg:w-[40vh] overflow-hidden bg-white rounded-lg lg:shadow-lg ">
 
-    //renderizando o botão de mais posts com toda sua logica e condições dadas pelo useeffect
-    const renderMoreButton = () => {
-        return stateMoreButton;
-    }
+                        <div className="px-4 py-2">
+                            <div className="flex items-center gap-1 mb-3">
+                                <img className="w-[30px] h-[30px] rounded-full object-cover" src={user.photo || "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user-256.png"} alt="profile_pic"/>{/*se usuario n ter foto ele da uma foto padrao de um user pattern*/}
+                                <p className="text-xs font-bold text-gray-800">@{user.nick}</p>
+                            </div>
+                            <p className="mt-1 text-sm text-gray-600">{newPostContent}</p>
+                        </div>
+
+                        <div className="flex items-center justify-between px-4 py-2 bg-[#3b82f6]">
+                            <small className="text-sm text-white">Now</small>
+                            <button className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none">More</button>
+                        </div>    
+
+                    </div>
+
+                );
+
+            }else{// se ter
+
+                //itera sobre as midias do post
+                const render_midias = newPostMidia.map((file, index) => {
+
+                        //array de html de midia (pode ser <img> ou <video>)
+                        let midias = [];
+
+                        //se essa midia desse post for do tipo de imagem.. (png,jpeg, etc..)
+                        if (file.type.indexOf("png") != -1 || file.type.indexOf("jpg") != -1 || file.type.indexOf("jpeg") != -1 || file.type.indexOf("webp") != -1) {
+                            
+                            //ele adiciona no array de midias um elemento <img> com a file da midia como src..
+                            midias.push(
+
+                                <a key={index} target="_blank" href={URL.createObjectURL(file)}>
+                                    <img className="object-cover w-full h-[30vh] rounded-b-lg" src={file}/>
+                                </a>
+                                
+
+                            )
+
+                        } else if (file.type.indexOf("mp4") != -1 || file.type.indexOf("mkv") != -1 || file.type.indexOf("webm") != -1 || file.type.indexOf("mov") != -1){////se essa midia desse post for do tipo de video.. (mp4, mkv, mov, etc..)
+
+                            //ele adiciona no array de midias um elemento <video> com a file da midia como src..
+                            midias.push(
+
+                                <video key={index} controls className="object-cover w-full h-[30vh] rounded-b-lg">
+                                    <source src={URL.createObjectURL(file)} type={"video/" + file.substr(file.indexOf('.') + 1, file.length) } />    
+                                </video>                                        
+
+                            )
+
+                        }
+
+                        //retorna esse array de elementos html..
+                        return midias;
+                    }
+                );
+
+                //validações se monta o carrousel ou não (caso uma midia somente, ele n monta..)
+                let carrousel = () => {
+                    //se so houver UMA midia não há necessidade de fazer carrousel ent ele só devolve  amidia em si.
+                    if (render_midias.length == 1) {
+                        return render_midias[0];{/* retorna o primeiro elelemtno do array de elementos de midias  qnd for chamado em renderPublications() */}
+                    }else{//se houver mais de um ele faz o carrousel
+                        {/* usa o react-slick para criar um carrosel de midias.. */}
+                        return (<div className="slider-container m-0 p-0">
+                            <Slider {...{//objeto de configurações do react-slick
+                                dots: true,
+                                infinite: true,
+                                speed: 500,
+                                slidesToShow: 1,
+                                slidesToScroll: 1
+                            }}>
+                                {/* retorna o array de elementos de midias para o carrosel renderizar qnd for chamado em renderPublications() */}
+                                {render_midias}
+                            </Slider>
+                        </div>)
+                    }
+
+                }
+
+                newPost = (
+
+                    //da o html de um post com midias..
+                    <div key={0}>
+
+                        <div className="w-[32vh] lg:w-[40vh] p-0 m-0 bg-white rounded-t-lg lg:shadow-lg ">
+                            <div className="px-4 py-2">
+                                <div className="flex items-center gap-1 mb-3">
+                                    <img className="w-[30px] h-[30px] rounded-full object-cover" src={user.photo || "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user-256.png"} alt="profile_pic"/>{/*se usuario n ter foto ele da uma foto padrao de um user pattern*/}
+                                    <p className="text-xs font-bold text-gray-800">@{user.nick}</p>
+                                </div>
+                                <p className="mt-1 text-sm text-gray-600">{newPostContent}</p>
+                            </div>
+
+                            <div className="flex items-center justify-between px-4 py-2 bg-[#3b82f6]">
+                                <small className="text-sm text-white">Now</small>
+                                <button className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none">More</button>
+                            </div>
+
+                            {carrousel()}
+
+                        </div>
+
+                    </div>
+
+                );
+
+            }
+
+        };
+
+        handleNewPost();
+
+        console.log(statePublications, newPost );
+
+        // Mescla as publicações atuais com as novas publicações
+        statePublications.unshift(newPost);
+
+        // Atualiza a variável de estado com a lista mesclada
+        setPublications(statePublications);
+
+        renderListPosts();
+
+        console.log(statePublications);
+
+    }, []);
 
     return (
         <div className="flex align-center space-y-6 flex-col pt-12 lg:mx-28 lg:pt-auto lg:mt-16 lg:bg-white lg:rounded-[16px] lg:p-5">
@@ -271,14 +414,14 @@ export default function Feed() {
             <div className="max-h-[80vh] overflow-y-auto grid gap-10 justify-items-center">
 
                 {/* o formulario de novo post.. */}
-                <PublicateForm id_user={user._id} nick={user.nick} photo={user.photo}/>
+                <PublicateForm onPublish={handleHasNew} id_user={user._id} nick={user.nick} photo={user.photo}/>
 
                 <h1 className="text-center text-slate-400 font-bold">These are the current posts</h1>
                 <div id="beginning_loading" className="text-center"><svg className="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24"></svg> Loading...</div>
                 {/* os posts atuais */}
-                {renderPublications()}
-                {/* o butão de mais se houver mais posts */}
-                {renderMoreButton()}
+                {statePublications}
+                {/* //renderizando o botão de mais posts com toda sua logica e condições dadas pelo useeffect*/}
+                {stateMoreButton}
             </div>
         </div>
     );

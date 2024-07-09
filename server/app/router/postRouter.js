@@ -22,8 +22,6 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
 
-        console.log(file);
-
         //criando nome aleatório para o arquivo local q será salvo..
         const serverfilename = uuidv4() + '.' + file.mimetype.split('/')[1];
 
