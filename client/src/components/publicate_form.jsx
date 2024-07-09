@@ -6,13 +6,9 @@ export default function PublicateForm(props) {
     //props
     const {id_user, nick, photo, onPublish} = props;
 
-    //vars..
-    const navigate = useNavigate();
-
     //state vars..
     const [btnActivate, setbtnDesativate] = useState(true);
     const [btnText, setbtnText] = useState("Write something to publish...");
-    
 
     const [content, setContent] = useState("");
     const [mediaFiles, setMediaFiles] = useState([]);
@@ -35,10 +31,15 @@ export default function PublicateForm(props) {
     const handleContentChange = (e) => {
         setContent(e.target.value);
 
-        if (e.target.value == "") {
-            setbtnText("Write something to publish...")
-            document.querySelector('#btn').classList.add('bg-gray-200');
-            setbtnDesativate(true)
+        if (e.target.value == "" || !e.target.value) {
+
+            if (mediaFiles.length == 0) {
+
+                setbtnText("Write something to publish...")
+                document.querySelector('#btn').classList.add('bg-gray-200');
+                setbtnDesativate(true)   
+
+            }
 
         }else{
             setbtnText("Publish")
@@ -132,19 +133,27 @@ export default function PublicateForm(props) {
 
         }
 
-        document.querySelector('#preview_list').innerHTML = ""
+        //dando callback para o Feed.jsx atualizar os posts atuais..
+        onPublish(content, mediaFiles);
+
+        mediaFiles.splice(0, mediaFiles.length);
+        document.getElementById('sendForm').reset();
+        document.getElementById('media-upload').value = [];
+        previewMedia([])
         setContent("")
+
+        console.log(mediaFiles);
+        console.log(document.getElementById('media-upload').value);
 
         setbtnText("Write something to publish...");
         setbtnDesativate(false);
 
-        //dando callback para o Feed.jsx atualizar os posts atuais..
-        onPublish(content, mediaFiles);
+        
 
     };
 
     return (
-        <form className="min-w-[38vh] overflow-hidden bg-white rounded-[16px] lg:shadow-lg">
+        <form id="sendForm" className="min-w-[38vh] overflow-hidden bg-white rounded-[16px] lg:shadow-lg">
             
             <div className="px-4 py-2">
                 <div className="flex items-center gap-1 mb-3">
@@ -192,7 +201,7 @@ export default function PublicateForm(props) {
                     type="submit"
                     id="btn"
                     onClick={handleSubmit}
-                    className="px-2 bg-gray-200 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none"
+                    className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none"
                     disabled={btnActivate}
                 >
 

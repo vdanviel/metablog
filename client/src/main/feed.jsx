@@ -7,10 +7,12 @@ import "slick-carousel/slick/slick-theme.css";
 import "../styles/carrousel.css"
 
 //components..
-import { IoClose } from "react-icons/io5";
+import { MdDoNotDisturb } from "react-icons/md";
+import { PiSmileySad } from "react-icons/pi";
 import Slider from "react-slick";
 import Button from "../components/button.jsx";
 import PublicateForm from "../components/publicate_form.jsx";
+import AlertFadeSuccess from "../components/alert/fade/success.jsx";
 
 export default function Feed() {
     
@@ -40,6 +42,7 @@ export default function Feed() {
         }
     };
 
+    //abre todos os arrays de posts recebidos e retorna todos em um unico array.. (usado para renderizar os posts)
     const renderListPosts = () => {
         const list = []
 
@@ -64,15 +67,20 @@ export default function Feed() {
 
                 //da um html de avisoo..
                 publications = (
-                    <div className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow-lg max-w-md mx-auto">
-                        <div className="flex justify-end w-full">
+                    <div key={"no-posts"} className="flex flex-col items-center overflow-y-hidden m-5 justify-center p-4 bg-white rounded-lg max-w-md mx-auto lg:shadow-lg">
+
+                        <div className="flex justify-center w-full">
                             <span className="text-gray-400">
-                            <IoClose size={24} />
+                            <MdDoNotDisturb size={24} />
                             </span>
                         </div>
 
                         <div className="flex flex-col items-center justify-center mt-4">
-                            <p className="text-lg font-semibold text-gray-800">There are no posts yet.</p>
+                            <span className="inline-flex items-center gap-1">
+                                <p className="text-lg font-semibold text-gray-800">You have no posts yet</p>
+                                <PiSmileySad size="22px"/>
+                            </span>
+                            
                             <p className="text-sm text-gray-600 mt-2">Post something or follow someone!</p>
                         </div>
                     </div>
@@ -89,7 +97,7 @@ export default function Feed() {
                         // ele da um html sem midia só com o content do post..
                         return(
 
-                            <div key={item._id} className="w-[32vh] lg:w-[40vh] overflow-hidden bg-white rounded-lg lg:shadow-lg ">
+                            <div key={item._id} className="w-[32vh] lg:w-[40vh] overflow-hidden bg-white rounded-lg lg:shadow-lg">
         
                                 <div className="px-4 py-2">
                                     <div className="flex items-center gap-1 mb-3">
@@ -211,10 +219,7 @@ export default function Feed() {
                 (TUDO ISSO ACONTECE PARA UMA BOA PERFORMANCE)
             */
 
-            // Atualiza a variável de estado com a lista mesclada
-
-            console.log(statePublications, publications);
-
+            //joga os posts recuperados no array de posts..
             statePublications.push(publications);
 
             setPublications(statePublications);
@@ -266,8 +271,11 @@ export default function Feed() {
 
         renderListPosts();
 
+        console.log(statePublications);
+
     }, [statePubliOffset ,statePubliLimit]);
 
+    //quando o usuario post algumo novo post..
     const handleHasNew = useCallback((newPostContent, newPostMidia) => {
 
         let newPost = null;
@@ -277,31 +285,34 @@ export default function Feed() {
             //se o post n ter midia
             if (newPostMidia.length == 0) {
 
-                // ele da um html sem midia só com o content do post..
+                // ele da um html sem midia só com o content do post e com aviso de post enviado..
                 newPost = (
 
-                    <div key={0} className="w-[32vh] lg:w-[40vh] overflow-hidden bg-white rounded-lg lg:shadow-lg ">
+                    <div>
+                        <AlertFadeSuccess message="Publicated successfully!" duration={1500} />
+                        <div key={(new Date().getTime() )} className="w-[32vh] lg:w-[40vh] overflow-hidden bg-white rounded-lg lg:shadow-lg ">
 
-                        <div className="px-4 py-2">
-                            <div className="flex items-center gap-1 mb-3">
-                                <img className="w-[30px] h-[30px] rounded-full object-cover" src={user.photo || "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user-256.png"} alt="profile_pic"/>{/*se usuario n ter foto ele da uma foto padrao de um user pattern*/}
-                                <p className="text-xs font-bold text-gray-800">@{user.nick}</p>
+                            <div className="px-4 py-2">
+                                <div className="flex items-center gap-1 mb-3">
+                                    <img className="w-[30px] h-[30px] rounded-full object-cover" src={user.photo || "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user-256.png"} alt="profile_pic"/>{/*se usuario n ter foto ele da uma foto padrao de um user pattern*/}
+                                    <p className="text-xs font-bold text-gray-800">@{user.nick}</p>
+                                </div>
+                                <p className="mt-1 text-sm text-gray-600">{newPostContent}</p>
                             </div>
-                            <p className="mt-1 text-sm text-gray-600">{newPostContent}</p>
+
+                            <div className="flex items-center justify-between px-4 py-2 bg-[#3b82f6]">
+                                <small className="text-sm text-white">Now</small>
+                                <button className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none">More</button>
+                            </div>    
+
                         </div>
-
-                        <div className="flex items-center justify-between px-4 py-2 bg-[#3b82f6]">
-                            <small className="text-sm text-white">Now</small>
-                            <button className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none">More</button>
-                        </div>    
-
                     </div>
 
                 );
 
             }else{// se ter
 
-                //itera sobre as midias do post
+                //itera sobre as midias do post e com aviso de post enviado..
                 const render_midias = newPostMidia.map((file, index) => {
 
                         //array de html de midia (pode ser <img> ou <video>)
@@ -314,7 +325,7 @@ export default function Feed() {
                             midias.push(
 
                                 <a key={index} target="_blank" href={URL.createObjectURL(file)}>
-                                    <img className="object-cover w-full h-[30vh] rounded-b-lg" src={file}/>
+                                    <img className="object-cover w-full h-[30vh] rounded-b-lg" src={URL.createObjectURL(file)}/>
                                 </a>
                                 
 
@@ -326,7 +337,7 @@ export default function Feed() {
                             midias.push(
 
                                 <video key={index} controls className="object-cover w-full h-[30vh] rounded-b-lg">
-                                    <source src={URL.createObjectURL(file)} type={"video/" + file.substr(file.indexOf('.') + 1, file.length) } />    
+                                    <source src={URL.createObjectURL(file)} type={file.type} />    
                                 </video>                                        
 
                             )
@@ -363,8 +374,10 @@ export default function Feed() {
 
                 newPost = (
 
-                    //da o html de um post com midias..
-                    <div key={0}>
+                    //da o html de um post com midias e com o aviso de postado..
+                    <div key={(new Date().getTime() )}>
+
+                        <AlertFadeSuccess message="Publicated successfully!" duration={5000} />
 
                         <div className="w-[32vh] lg:w-[40vh] p-0 m-0 bg-white rounded-t-lg lg:shadow-lg ">
                             <div className="px-4 py-2">
@@ -394,17 +407,14 @@ export default function Feed() {
 
         handleNewPost();
 
-        console.log(statePublications, newPost );
+        //se ele for a key "no-posts" quer dizer q ele é aquele card de aviso q n ha posts, ai ele só vai deletar ele e colocar o novo post..
+        statePublications[0].key == "no-posts" ? statePublications.splice(0, statePublications.length) : null;
 
-        // Mescla as publicações atuais com as novas publicações
         statePublications.unshift(newPost);
 
-        // Atualiza a variável de estado com a lista mesclada
         setPublications(statePublications);
 
         renderListPosts();
-
-        console.log(statePublications);
 
     }, []);
 
