@@ -10,6 +10,7 @@ import "../styles/carrousel.css"
 import { IoClose } from "react-icons/io5";
 import Slider from "react-slick";
 import Button from "../components/button.jsx";
+import PublicateForm from "../components/publicate_form.jsx";
 
 export default function Feed() {
     
@@ -77,7 +78,7 @@ export default function Feed() {
                         // ele da um html sem midia só com o content do post..
                         return(
 
-                            <div className="max-w-xs overflow-hidden bg-white rounded-lg lg:shadow-lg ">
+                            <div key={item._id} className="w-[32vh] lg:w-[40vh] overflow-hidden bg-white rounded-lg lg:shadow-lg ">
         
                                 <div className="px-4 py-2">
                                     <div className="flex items-center gap-1 mb-3">
@@ -99,10 +100,11 @@ export default function Feed() {
                     }else{// se ter
 
                         //itera sobre as midias do post
-                        const render_midias = item.media.map(url => {
+                        const render_midias = item.media.map((url, index) => {
 
                                 //array de html de midia (pode ser <img> ou <video>)
-                                const midias = [];
+                                let midias = [];
+
 
                                 //se essa midia desse post for do tipo de imagem.. (png,jpeg, etc..)
                                 if (url.indexOf(".png") != -1 || url.indexOf(".jpg") != -1 || url.indexOf(".jpeg") != -1 || url.indexOf(".webp") != -1) {
@@ -110,7 +112,10 @@ export default function Feed() {
                                     //ele adiciona no array de midias um elemento <img> com a url da midia como src..
                                     midias.push(
 
-                                        <img className="object-cover w-full h-[30vh] rounded-b-lg" src={url}/>
+                                        <a key={index} target="_blank" href={url}>
+                                            <img className="object-cover w-full h-[30vh] rounded-b-lg" src={url}/>
+                                        </a>
+                                        
 
                                     )
 
@@ -119,9 +124,9 @@ export default function Feed() {
                                     //ele adiciona no array de midias um elemento <video> com a url da midia como src..
                                     midias.push(
 
-                                        <video controls className="object-cover w-full h-[30vh] rounded-b-lg">
-                                            <source src={url} type={"video/" + url.substr(url.indexOf('.') + 1, url.length) } />
-                                        </video>
+                                        <video key={index} controls className="object-cover w-full h-[30vh] rounded-b-lg">
+                                            <source src={url} type={"video/" + url.substr(url.indexOf('.') + 1, url.length) } />    
+                                        </video>                                        
 
                                     )
 
@@ -132,12 +137,35 @@ export default function Feed() {
                             }
                         );
 
+                        //validações se monta o carrousel ou não (caso uma midia somente, ele n monta..)
+                        let carrousel = () => {
+                            //se so houver UMA midia não há necessidade de fazer carrousel ent ele só devolve  amidia em si.
+                            if (render_midias.length == 1) {
+                                return render_midias[0];{/* retorna o primeiro elelemtno do array de elementos de midias  qnd for chamado em renderPublications() */}
+                            }else{//se houver mais de um ele faz o carrousel
+                                {/* usa o react-slick para criar um carrosel de midias.. */}
+                                return (<div className="slider-container m-0 p-0">
+                                    <Slider {...{//objeto de configurações do react-slick
+                                        dots: true,
+                                        infinite: true,
+                                        speed: 500,
+                                        slidesToShow: 1,
+                                        slidesToScroll: 1
+                                    }}>
+                                        {/* retorna o array de elementos de midias para o carrosel renderizar qnd for chamado em renderPublications() */}
+                                        {render_midias}
+                                    </Slider>
+                                </div>)
+                            }
+
+                        }
+
                         return(
 
                             //da o html de um post com midias..
-                            <div>
+                            <div key={item._id}>
 
-                                <div className="max-w-xs lg:max-w-auto p-0 m-0 bg-white rounded-t-lg lg:shadow-lg ">
+                                <div className="w-[32vh] lg:w-[40vh] p-0 m-0 bg-white rounded-t-lg lg:shadow-lg ">
                                     <div className="px-4 py-2">
                                         <div className="flex items-center gap-1 mb-3">
                                             <img className="w-[30px] h-[30px] rounded-full object-cover" src={item.user.photo || "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user-256.png"} alt="profile_pic"/>{/*se usuario n ter foto ele da uma foto padrao de um user pattern*/}
@@ -151,19 +179,7 @@ export default function Feed() {
                                         <button className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none">More</button>
                                     </div>
 
-                                    {/* usa o react-slick para criar um carrosel de midias.. */}
-                                    <div className="slider-container m-0 p-0">
-                                        <Slider {...{//objeto de configurações do react-slick
-                                            dots: true,
-                                            infinite: true,
-                                            speed: 500,
-                                            slidesToShow: 1,
-                                            slidesToScroll: 1
-                                        }}>
-                                            {/* retorna o array de elementos de midias para o carrosel renderizar qnd for chamado em renderPublications() */}
-                                            {render_midias}
-                                        </Slider>
-                                    </div>
+                                    {carrousel()}
 
                                 </div>
         
@@ -185,7 +201,7 @@ export default function Feed() {
             */
 
             //adiciona todas as publicaçoes atuais na variavel de estado de publicações
-            statePublications.push(publications)
+            statePublications.push(publications);
 
             //define as novas publicações na página..
             setPublications(statePublications);
@@ -251,12 +267,13 @@ export default function Feed() {
 
     return (
         <div className="flex align-center space-y-6 flex-col pt-12 lg:mx-28 lg:pt-auto lg:mt-16 lg:bg-white lg:rounded-[16px] lg:p-5">
-            <h1 className="text-center text-slate-400 font-bold">These are the current posts</h1>
+            <h1 className="text-center text-slate-400 font-bold">Welcome again, @{user.nick}!</h1>
             <div className="max-h-[80vh] overflow-y-auto grid gap-10 justify-items-center">
 
                 {/* o formulario de novo post.. */}
+                <PublicateForm id_user={user._id} nick={user.nick} photo={user.photo}/>
 
-
+                <h1 className="text-center text-slate-400 font-bold">These are the current posts</h1>
                 <div id="beginning_loading" className="text-center"><svg className="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24"></svg> Loading...</div>
                 {/* os posts atuais */}
                 {renderPublications()}

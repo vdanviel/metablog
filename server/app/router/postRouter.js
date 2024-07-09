@@ -22,8 +22,10 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
 
+        console.log(file);
+
         //criando nome aleatório para o arquivo local q será salvo..
-        const serverfilename = uuidv4() + path.extname(file.originalname);
+        const serverfilename = uuidv4() + '.' + file.mimetype.split('/')[1];
 
         cb(null, serverfilename);
     }
@@ -35,7 +37,7 @@ const upload = multer({ storage: storage });
 postRouter.post('/', upload.array('medias', 10), async (req, res) => {
     try {
 
-        if (!req.body.id_user || !req.body.content || req.body.id_user == "" || req.body.content == "") {
+        if (!req.body.content && !req.files) {
             return res.status(400).json({
                 status: false,
                 missing: {
@@ -50,7 +52,7 @@ postRouter.post('/', upload.array('medias', 10), async (req, res) => {
         let midiaurls = [];
 
         req.files.forEach(file => {
-            
+
             midiaurls.push(config.url.local + "/uploads/" + file.filename);
 
         });

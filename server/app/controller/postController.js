@@ -21,6 +21,8 @@ const controller = {
                 };
             }        
             
+            user.following.push(new mongodb.ObjectId(user._id));
+
             const posts = await postcoll
                 .find({ "user_id": { "$in": user.following } })
                 .sort({ created_at: -1 })//ordena por data de criação, mais recentes primeiro
