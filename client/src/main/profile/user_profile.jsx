@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 
 export default function Profile(){
 
-    const [name, setName] = useState('Carregando..');
-    const [age, setAge] = useState('Carregando..');
-    const [bio, setBio] = useState('Carregando..');
-    const [email, setEmail] = useState('Carregando..');
+    const [name, setName] = useState('Loading..');
+    const [age, setAge] = useState('Loading..');
+    const [bio, setBio] = useState('Loading..');
+    const [email, setEmail] = useState('Loading..');
 
     let [counter, setCounter] = useState(0);
 

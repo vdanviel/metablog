@@ -70,8 +70,11 @@ const controller = {
             status: false,
             text: "Internal server error on controller/user.",
             error: {
-              message: error.message,
-              stack: error.stack
+                message: error.message,
+                stack: error.stack,
+                file: error.fileName, 
+                line: error.lineNumber, 
+                column: error.columnNumber, 
             }
           };
         }
@@ -113,8 +116,11 @@ const controller = {
             status: false,
             text: "Internal server error on controller/user.",
             error: {
-              message: error.message,
-              stack: error.stack
+                message: error.message,
+                stack: error.stack,
+                file: error.fileName, 
+                line: error.lineNumber, 
+                column: error.columnNumber, 
             }
           };
         }

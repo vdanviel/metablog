@@ -1,6 +1,12 @@
-import { FaRocketchat } from "react-icons/fa6";
-import { useState } from "react";
 import Modal from "../../components/modal.jsx";
+
+//icons
+import { FaRocketchat } from "react-icons/fa6";
+import { FaUser } from "react-icons/fa";
+import { MdOutlineExplore } from "react-icons/md";
+import { FaInfo } from "react-icons/fa";
+import { useState } from "react";
+import { ImExit } from "react-icons/im";
 
 export default function Navbar(){
 
@@ -35,9 +41,10 @@ export default function Navbar(){
   const modal_mobile_content = (
     <div className="min-w-[200px]">
         <div>
-          <a href="/profile" className="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Your Profile </a>
-          <a href="/about" className="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Info </a>
-          <a onClick={logOut} className="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Sign Out </a>
+          <a href="/explore" className="flex items-center px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> <MdOutlineExplore className="mr-2"/> Explore </a>
+          <a href="/profile" className="flex items-center px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> <FaUser className="mr-2" /> Your Profile </a>
+          <a href="/about" className="flex items-center px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> <FaInfo className="mr-2"/> Info </a>
+          <a onClick={logOut} className="flex items-center px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> <ImExit className="mr-2"/> Sign Out </a>
         </div>
     </div>
   )
@@ -59,9 +66,10 @@ export default function Navbar(){
           </button>
 
           <div className="hidden lg:flex space-x-4">
-            <a className="font-bold" href="/profile">Profile</a>
-            <a className="font-bold" href="/about">Info</a>
-            <a className="font-bold cursor-pointer" onClick={logOut}>Sign Out</a>
+            <a className="font-bold" href="/explore"><MdOutlineExplore size={22}/></a>
+            <a className="font-bold" href="/about"><FaInfo size={22}/></a>
+            <a className="font-bold" href="/profile"><FaUser size={22} /></a>
+            <a className="font-bold cursor-pointer" onClick={logOut}><ImExit size={22}/></a>
           </div>
 
         </div>

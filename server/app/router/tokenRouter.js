@@ -15,21 +15,37 @@ tokenRouter.post('/forget-password', async (req, res) => {
     let required = ['email'];
     let validating = utils.validate(req.body, required);
 
-    if (validating == true) {
+    try {
         
-         return res.status(200).json(await controller.forgetPassword(req.body.email));
+        if (validating == true) {
+        
+            return res.status(200).json(await controller.forgetPassword(req.body.email));
+   
+       }else{
+   
+           return res.status(400).json({
+               status: false,
+               text: "Please fill in the required fields.",
+               missing: validating
+           });
+   
+       }
 
-    }else{
-
-        return res.status(400).json({
+    } catch (error) {
+        
+        res.status(500).json({
             status: false,
-            text: "Please fill in the required fields.",
-            missing: validating
+            message: "Internal Server Error",
+            error: {
+                message: error.message,
+                stack: error.stack,
+                file: error.fileName, 
+                line: error.lineNumber, 
+                column: error.columnNumber, 
+            }
         });
 
     }
-
-
 
 });
 
@@ -38,19 +54,39 @@ tokenRouter.get('/verify-forget-password/:token', async (req, res) => {
     let required = ['token'];
     let validating = utils.validate(req.params, required);
 
-    if (validating == true) {
+    try {
+        
+        if (validating == true) {
         
          return res.status(200).json(await controller.verifyToken(req.params.token));
 
-    }else{
+        }else{
 
-        return res.status(400).json({
+            return res.status(400).json({
+                status: false,
+                text: "Please fill in the required fields.",
+                missing: validating
+            });
+
+        }
+
+    } catch (error) {
+        
+        res.status(500).json({
             status: false,
-            text: "Please fill in the required fields.",
-            missing: validating
+            message: "Internal Server Error",
+            error: {
+                message: error.message,
+                stack: error.stack,
+                file: error.fileName, 
+                line: error.lineNumber, 
+                column: error.columnNumber, 
+            }
         });
 
     }
+
+
 
 
 

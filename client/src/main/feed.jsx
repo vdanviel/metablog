@@ -40,7 +40,7 @@ export default function Feed() {
         } catch (error) {
             console.error('Error on loading feed: ', error);
         }
-    };
+    }
 
     //abre todos os arrays de posts recebidos e retorna todos em um unico array.. (usado para renderizar os posts)
     const renderListPosts = () => {

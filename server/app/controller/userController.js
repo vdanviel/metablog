@@ -1,12 +1,13 @@
 //libs/sdks..
 import CryptoJS from "crypto-js";
-import { ObjectId } from "mongodb";
+import mongodb from "mongodb";
 import path from "path";
 import fs from "node:fs";
 
 //modules..
 import {userModelInstance, usercoll} from "../model/userModel.js";
 import {tokenModelInstance, tokencoll} from "../model/tokenModel.js";
+import { postcoll, PostModelInstance } from "../model/postModel.js";
 import { utils } from "../utils/functions.js";
 
 //secure data
@@ -31,8 +32,29 @@ const controller = {
     async find(id){
 
         try {
-            const user = await userModelInstance.findbyid(id);
+            
+            const query = { _id: new mongodb.ObjectId(id) };
+
+            const options = {
+
+                sort:
+                {
+                    "_id": -1
+                },
+
+                projection: 
+                { 
+                    password: 0,
+                    email: 0
+                }
+
+            };
+
+            // Execute query
+            const user = await usercoll.findOne(query, options);
+
             return user;
+
         } catch (error) {
             return {
                 status: false,
@@ -80,7 +102,8 @@ const controller = {
                 following: [],
                 bio: bio,
                 password: cipherpassword,
-                photo: null
+                photo: null,
+                banner: null
             }
 
             const registered = await userModelInstance.insert(info);
@@ -114,7 +137,10 @@ const controller = {
                 text: "Internal server error on controller/user. " + error,
                 error: {
                     message: error.message,
-                    stack: error.stack
+                    stack: error.stack,
+                    file: error.fileName, 
+                    line: error.lineNumber, 
+                    column: error.columnNumber, 
                 }
             }
         }
@@ -151,34 +177,130 @@ const controller = {
                 text: "Internal server error on controller/user. " + error,
                 error: {
                     message: error.message,
-                    stack: error.stack
+                    stack: error.stack,
+                    file: error.fileName, 
+                    line: error.lineNumber, 
+                    column: error.columnNumber, 
                 }
             };
         }
     },
+
+    async update_user_banner(id, url_banner) {
+        try {
+
+            // Verifica se o usuário existe antes de atualizar a foto
+            const user = await userModelInstance.findbyid(id);
+            
+            if (!user) {
+                return {
+                    status: false,
+                    text: "User not found."
+                };
+            }
     
+            // Atualiza a foto do usuário
+            const updated = await userModelInstance.update(id, {$set: { "banner": url_banner }});
+
+            if (!updated) {
+                return {
+                    status: false,
+                    text: "It wasn't possible to save the photo in ours databases. Try again later.",
+                };
+            }
+
+            return updated;
+            
+        } catch (error) {
+            return {
+                status: false,
+                text: "Internal server error on controller/user. " + error,
+                error: {
+                    message: error.message,
+                    stack: error.stack,
+                    file: error.fileName, 
+                    line: error.lineNumber, 
+                    column: error.columnNumber, 
+                }
+            };
+        }
+    },    
+
+    async user_info(nickname) {
+
+        try {
+
+            //usuario encontrado pelo nick..
+            const existed = await usercoll.findOne({nick: nickname}, {projection: {password:0}});
+
+            if (!existed) {
+                
+                return {
+                    status: false,
+                    text: "There's no such user."
+                }
+
+            }
+
+            //os usuários que esse usuário segue..
+            const followers = await usercoll.find({ _id: { $in: existed.followers } }, {projection: {name:1,nick:1,photo:1,banner:1}} ).toArray();   
+
+            //os usuários que seguem esse usuário..
+            const following = await usercoll.find({ _id: { $in: existed.following } }, {projection: {name:1,nick:1,photo:1,banner:1}}  ).toArray();
+
+            //os posts desse usuário..
+            const posts = await PostModelInstance.find({user_id: new mongodb.ObjectId(existed._id)});
+
+            //o usuário requisitado..
+            const user = await usercoll.findOne({_id: existed._id}, {projection: {password:0, email:0, _id:0}});
+
+            return {
+                status: true,
+                user: user,
+                followers: followers,
+                following: following,
+                posts: posts
+            }
+
+        } catch (error) {
+            return {
+                status: false,
+                text: "Internal server error on controller/user.",
+                error: {
+                    message: error.message,
+                    stack: error.stack,
+                    file: error.fileName, 
+                    line: error.lineNumber, 
+                    column: error.columnNumber, 
+                }
+            }
+
+        }
+
+    },
+
     async login(email, password){
 
         try {
             
             //verificar se existe um email com o mesmo valor..
 
-            let existed_email = {"email": email};
-
-            let existed = await userModelInstance.find(existed_email);
+            let existed = await usercoll.findOne({"email": email});
 
             // Verificar se algum usuário foi encontrado
-            if (existed.length > 0) {
+            if (existed) {
 
-                var bytes  = CryptoJS.AES.decrypt(existed[0].password, config.crytokey);
+                var bytes  = CryptoJS.AES.decrypt(existed.password, config.crytokey);
                 var original_password = bytes.toString(CryptoJS.enc.Utf8);
 
                 if (original_password == password) {
                     
+                    let user = await usercoll.findOne({"email": email}, {projection: {password:0, email:0}});
+
                     return {
                         status: true,
                         text: "Authenticated sucessfully.",
-                        user: JSON.stringify(existed[0])
+                        user: JSON.stringify(user)
                     };
 
                 }else{
@@ -203,7 +325,10 @@ const controller = {
                 text: "Internal server error on controller/user. " + error,
                 error: {
                     message: error.message,
-                    stack: error.stack
+                    stack: error.stack,
+                    file: error.fileName, 
+                    line: error.lineNumber, 
+                    column: error.columnNumber, 
                 }
             };
         }
@@ -246,10 +371,10 @@ const controller = {
 
             //https://www.mongodb.com/docs/manual/reference/operator/update/push/#mongodb-update-up.-push
             //usuario seguidor recebe quem está seguindo..
-            const handleing_follower = await userModelInstance.update(follower_id, { $push: { following: new ObjectId(following_id) }})
+            const handleing_follower = await userModelInstance.update(follower_id, { $push: { following: new mongodb.ObjectId(following_id) }})
 
             //usuario seguido recebe o seguidor..
-            const handleing_following = await userModelInstance.update(following_id, { $push: { followers: new ObjectId(follower_id) }})
+            const handleing_following = await userModelInstance.update(following_id, { $push: { followers: new mongodb.ObjectId(follower_id) }})
             
             if (handleing_follower == false || handleing_following == false) {
                 
@@ -275,7 +400,6 @@ const controller = {
         }
 
     },
-
     async resetPassword(id_user, type, token, newPassword) {
 
         try {

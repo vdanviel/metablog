@@ -21,24 +21,26 @@ const controller = {
                 };
             }        
             
-            user.following.push(new mongodb.ObjectId(user._id));
+            user.following.push(new mongodb.ObjectId(user_id));
+
+            console.log(user.following);
 
             const posts = await postcoll
-                .find({ "user_id": { "$in": user.following } })
+                .find({user_id: { $in: user.following } })
                 .sort({ created_at: -1 })//ordena por data de criação, mais recentes primeiro
                 .skip(Number(offset))// skip - ele pula os documents encontrados ate o document do numero q vc escolher..
                 .limit(Number(limit) + 1) //adiciona 1 ao limite para verificar se há mais posts
                 .toArray();
-    
-            const result = [];
+                
             let more = false;
-    
             // Se o número de posts retornados for maior que o limite, então há mais posts
             if (posts.length > limit) {
                 more = true;
                 posts.pop();  // Remove o último post extra que foi usado para verificar a existência de mais posts
             }
-    
+        
+            const result = [];
+
             for (const post of posts) {
                 try {
                     const postUser = await userModelInstance.findbyid(post.user_id);
@@ -73,7 +75,7 @@ const controller = {
                 error: error
             };
         }
-    },    
+    },
 
     async publicate(user_id, content, arr_midia) {
         try {
@@ -81,7 +83,7 @@ const controller = {
             const inserted =
             await PostModelInstance.insert(
                 {
-                    "user_id":(new mongodb.ObjectId(user_id)),
+                    "user_id":new mongodb.ObjectId(user_id),
                     "content":content,
                     "media": arr_midia,
                     "likes":
@@ -125,7 +127,10 @@ const controller = {
                 text: "Internal server error on controller/user. " + error,
                 error: {
                     message: error.message,
-                    stack: error.stack
+                    stack: error.stack,
+                    file: error.fileName, 
+                    line: error.lineNumber, 
+                    column: error.columnNumber, 
                 }
             };
         }

@@ -10,10 +10,11 @@ import('./styles/default.css')
 import Home from "./main/home.jsx";
 import Register from "./main/register.jsx";
 import Login from "./main/login.jsx";
-import Feed from "./main/feed.jsx";
 import ForgetPassword from "./main/forget_password.jsx";
 import VerifyForgetPassword from "./main/token_user.jsx";
 import ChangePassword from "./main/change_password.jsx";
+import Feed from "./main/feed.jsx";
+import MyProfile from "./main/profile/my_profile.jsx";
 
 //pinned components
 import Header from "./components/main/navbar.jsx";
@@ -85,11 +86,19 @@ const modifiedrouter = createBrowserRouter([
       </Auth>
     )
   },
+  {
+    path: "profile",
+    element: (
+      <Auth auth={user}>
+        <MyProfile/>
+      </Auth>
+    )
+  },
 ]);
 
 //criando o ambiente de display (adicionandoRouterProvider)..
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.Suspense fallback={"LOADING.."} >
+  <React.Suspense fallback={"LOADING..."} >
     {user && <Header />} {/* Renderiza o Header se user estiver definido */}
     <RouterProvider router={modifiedrouter} /> {/*router=(seu objetos de definição de rotas) esse router pede o createBrowserRouter que vc vai usar*/}
   </React.Suspense >

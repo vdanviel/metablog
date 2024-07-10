@@ -90,7 +90,7 @@ postRouter.get('/all/:id_user/:offset/:limit', async (req, res) => {
         
         let required = ['id_user', 'offset', 'limit'];
 
-        let validating = utils.validate(req.params,required);
+        let validating = utils.validate(req.params, required);
 
         if(validating == true){
 

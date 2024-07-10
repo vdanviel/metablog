@@ -78,9 +78,9 @@ userRouter.post('/register', async (req, res) => {
             error: {
                 message: error.message,
                 stack: error.stack,
-                file: error.fileName, // Informações do arquivo onde ocorreu o erro (opcional)
-                line: error.lineNumber, // Número da linha onde ocorreu o erro (opcional)
-                column: error.columnNumber, // Número da coluna onde ocorreu o erro (opcional)
+                file: error.fileName, 
+                line: error.lineNumber,
+                column: error.columnNumber,
             }
         });
 
@@ -114,15 +114,15 @@ userRouter.get('/find/:id', async (req, res) => {
 
     } catch (error) {
         
-        res.status(500).json({
+        return res.status(500).json({
             status: false,
             message: "Internal Server Error",
             error: {
                 message: error.message,
                 stack: error.stack,
-                file: error.fileName, // Informações do arquivo onde ocorreu o erro (opcional)
-                line: error.lineNumber, // Número da linha onde ocorreu o erro (opcional)
-                column: error.columnNumber, // Número da coluna onde ocorreu o erro (opcional)
+                file: error.fileName, 
+                line: error.lineNumber, 
+                column: error.columnNumber, 
             }
         });
 
@@ -131,19 +131,21 @@ userRouter.get('/find/:id', async (req, res) => {
 })
 
 //configurando envio da foto de perfill..
-const userPhoto = uuidv4() + ".jpeg";//nome aleatórios para arquivos..
+const serverPhoto = uuidv4() + ".jpeg";//nome aleatórios para arquivos..
+
+//SALVAR FOTO DE PERFIL..
 
 // Configuração do multer para o armazenamento das imagens
-const storage = multer.diskStorage({
+const profilePhotoDestiny = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, config.uploads_local_directory);
     },
     filename: function (req, file, cb) {
-        cb(null, userPhoto);
+        cb(null, serverPhoto);
     }
 });
 
-const uploaduserphoto = multer({ storage: storage });
+const uploaduserphoto = multer({ storage: profilePhotoDestiny });
 
 // Rota para upload de imagem
 userRouter.patch('/upload-photo', uploaduserphoto.single('image'), async (req, res) => {
@@ -158,7 +160,7 @@ userRouter.patch('/upload-photo', uploaduserphoto.single('image'), async (req, r
             });
         }
 
-        let imgname = config.url.local + "/uploads/" + userPhoto;
+        let imgname = config.url.local + "/uploads/" + serverPhoto;
 
         //atualizando no banco de dados..
         let saved = await controller.update_user_photo(req.body.id, imgname)
@@ -175,6 +177,63 @@ userRouter.patch('/upload-photo', uploaduserphoto.single('image'), async (req, r
         return res.status(200).json({
             status: true,
             text: "Your profile picture was sucessfully saved!"
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+            error: {
+                message: error.message,
+                stack: error.stack
+            }
+        });
+    }
+});
+
+//SALVAR BANNER
+
+const bannerPhotoDestiny = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, config.uploads_local_directory);
+    },
+    filename: function (req, file, cb) {
+        cb(null, serverPhoto);
+    }
+});
+
+const uploadbannerphoto = multer({ storage: bannerPhotoDestiny });
+
+// Rota para upload de imagem
+userRouter.patch('/upload-banner', uploadbannerphoto.single('image'), async (req, res) => {
+
+    try {
+
+        if (!req.file || !req.body.id) {
+            return res.status(400).json({
+                status: false,
+                missing: ['id', 'image'],
+                text: "Please fill in the required fields."
+            });
+        }
+
+        let imgname = config.url.local + "/uploads/" + serverPhoto;
+
+        //atualizando no banco de dados..
+        let saved = await controller.update_user_banner(req.body.id, imgname)
+
+        if (saved.status == false) {
+
+            return res.status(400).json({
+                status: false,
+                text: saved.text
+            });
+            
+        }
+
+        return res.status(200).json({
+            status: true,
+            text: "Your banner was sucessfully saved!"
         });
 
     } catch (error) {
@@ -310,6 +369,50 @@ userRouter.patch('/change-password', async (req, res) => {
                 stack: error.stack
             }
         });
+    }
+
+});
+
+userRouter.get('/info/:nick', async (req, res) => {
+
+    try {
+        
+        const required = ['nick'];
+
+        const validate = utils.validate(req.params, required);
+
+        if (validate == true) {
+            
+            const info = await controller.user_info(req.params.nick);
+
+            return res.status(200).json(info);
+
+        }else{
+
+            return res.status(400).json({
+                status: false,
+                text: "Please fill in the required fields.",
+                missing: validate
+            });
+
+        }
+
+        
+
+    } catch (error) {
+        
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+            error: {
+                message: error.message,
+                stack: error.stack,
+                file: error.fileName, 
+                line: error.lineNumber, 
+                column: error.columnNumber, 
+            }
+        });
+
     }
 
 });

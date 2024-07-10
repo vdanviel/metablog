@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaImage } from "react-icons/fa6";
+import { IoMdClose } from "react-icons/io";
 
 export default function PublicateForm(props) {
     //props
     const {id_user, nick, photo, onPublish} = props;
 
     //state vars..
-    const [btnActivate, setbtnDesativate] = useState(true);
+    const [btnDesative, setbtnDesativate] = useState(true);
     const [btnText, setbtnText] = useState("Write something to publish...");
 
     const [content, setContent] = useState("");
@@ -23,7 +24,6 @@ export default function PublicateForm(props) {
         previewMedia(media);
 
         setbtnText("Publish")
-        document.querySelector('#btn').classList.remove('bg-gray-200');
         setbtnDesativate(false)
 
     };
@@ -36,14 +36,12 @@ export default function PublicateForm(props) {
             if (mediaFiles.length == 0) {
 
                 setbtnText("Write something to publish...")
-                document.querySelector('#btn').classList.add('bg-gray-200');
                 setbtnDesativate(true)   
 
             }
 
         }else{
             setbtnText("Publish")
-            document.querySelector('#btn').classList.remove('bg-gray-200');
             setbtnDesativate(false)
         }
 
@@ -136,17 +134,17 @@ export default function PublicateForm(props) {
         //dando callback para o Feed.jsx atualizar os posts atuais..
         onPublish(content, mediaFiles);
 
+        setContent("");
         mediaFiles.splice(0, mediaFiles.length);
         document.getElementById('sendForm').reset();
         document.getElementById('media-upload').value = [];
         previewMedia([])
-        setContent("")
 
         console.log(mediaFiles);
         console.log(document.getElementById('media-upload').value);
 
         setbtnText("Write something to publish...");
-        setbtnDesativate(false);
+        setbtnDesativate(true);
 
         
 
@@ -201,8 +199,8 @@ export default function PublicateForm(props) {
                     type="submit"
                     id="btn"
                     onClick={handleSubmit}
-                    className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none"
-                    disabled={btnActivate}
+                    className={`px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform  ${btnDesative ? 'bg-gray-200' : 'bg-white'} rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none`}
+                    disabled={btnDesative}
                 >
 
                     {btnText}
