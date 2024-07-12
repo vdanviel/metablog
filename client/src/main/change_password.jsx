@@ -28,25 +28,22 @@ export default function ChangePassword(){
 
         }
 
-    })
+    },[])
 
     //state vars..
     const [stateBtnContent, setBtnContent] = useState("Send");
     const [stateBtnStatus, setBtnStatus] = useState(true);
 
-    const fetchChangePassword = async () => {
+    const fetchChangePassword = async (e) => {
+
+        e.preventDefault();
 
         const password = document.getElementById('inpassword');
         const confirm_password = document.getElementById('inconfirmpassword');
 
         try {
             
-            if (password.value !== password.value) {
-
-                confirm_password.classList.add('border-red-400');
-                document.querySelector("#error_confirm_password").innerText = "Confirm password is invalid.";
-
-            }else{
+            if (password.value === confirm_password.value) {
 
                 setBtnContent("Loading...");
                 setBtnStatus(false);
@@ -117,6 +114,12 @@ export default function ChangePassword(){
     
                 setBtnContent("Send");
                 setBtnStatus(true);
+
+
+            }else{
+
+                confirm_password.classList.add('border-red-400');
+                document.querySelector("#error_confirm_password").innerText = "Confirm password is invalid.";
 
             }
 

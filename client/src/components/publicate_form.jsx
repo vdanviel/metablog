@@ -191,7 +191,7 @@ export default function PublicateForm(props) {
                     id="media-upload"
                     onChange={handleMediaChange}
                     multiple
-                    accept="video/*, image/*"
+                    accept="image/jpeg, image/png, image/gif, video/mp4, video/quicktime"
                     className="hidden"
                 />
 

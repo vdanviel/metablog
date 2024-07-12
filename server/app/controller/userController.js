@@ -491,6 +491,109 @@ const controller = {
           };
           
         }
+    },
+
+    async deleteAccount(id_user, password) {
+
+        try {
+            
+            const user = await usercoll.findOne({"_id": new mongodb.ObjectId(id_user)});
+
+            if (user.password != password) {
+                
+                return {
+                    status: false,
+                    text: "The password id invalid."
+                }
+
+            }else{
+
+                const deleted = await usercoll.deleteOne({"_id": new mongodb.ObjectId(id_user)});
+
+                if(deleted.deletedCount > 0){
+
+                    return {
+                        status: true,
+                        text: "Account deleted successfully."
+                    }
+
+                }else{
+
+                    return {
+                        status: false,
+                        text: "Error on deleting account.",
+                        err: deleted
+                    }
+
+                }
+
+            }
+
+        } catch (error) {
+
+          return {
+            status: false,
+            text: "Internal server error on controller/user.",
+            error: {
+              message: error.message,
+              stack: error.stack
+            }
+          };
+          
+        }
+    },
+
+    async update_user(id_user, name, nick, bio, email) {
+        try {
+
+            // Verifica se o usuário existe antes de atualizar a foto
+            const user = await userModelInstance.findbyid(id_user);
+            
+            if (!user) {
+                return {
+                    status: false,
+                    text: "User not found."
+                };
+            }
+            
+            // Create a filter for movies with the title "Random Harvest"
+            const filter = {"_id": new mongodb.ObjectId(id_user)};
+
+            // Specify the update to set a value for the plot field
+            const updateDoc = {
+                $set: {
+                    name: name,
+                    nick: nick,
+                    bio: bio,
+                    email: email,
+                }
+            };
+
+            // Atualiza a foto do usuário
+            const updated = await usercoll.updateOne(filter, updateDoc);
+
+            if (updated.modifiedCount < 0) {
+                return {
+                    status: false,
+                    text: "Error on updating the account.",
+                };
+            }
+
+            return updated;
+            
+        } catch (error) {
+            return {
+                status: false,
+                text: "Internal server error on controller/user. " + error,
+                error: {
+                    message: error.message,
+                    stack: error.stack,
+                    file: error.fileName, 
+                    line: error.lineNumber, 
+                    column: error.columnNumber, 
+                }
+            };
+        }
     }
 
 };

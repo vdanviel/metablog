@@ -2,6 +2,8 @@
 import { useNavigate } from "react-router-dom";
 import InfiniteScroll from 'react-infinite-scroll-component';
 
+import { TfiMinus } from "react-icons/tfi";
+
 //icons
 import { MdDoNotDisturb } from "react-icons/md";
 
@@ -154,7 +156,7 @@ export default function RenderUserPublications({user}) {
         next={loadMorePosts}
         hasMore={hasMore}
         loader={<h4>Loading...</h4>}
-        endMessage={<p style={{ textAlign: 'center' }}><b>Yay! You have seen it all</b></p>}
+        endMessage={<p style={{ textAlign: 'center' }}><p className="text-gray-500 flex justify-center items-center mt-4"><TfiMinus /></p></p>}
         >
         {renderPosts(user, posts)}
         </InfiniteScroll>

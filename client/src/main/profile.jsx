@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import Banner from '../assets/banner-preview.png';
 import RenderUserPublications from "../components/render/render_user_posts.jsx";
+import Modal from "../components/modal.jsx";
 
 export default function MyProfile() {
   const [stateName, setName] = useState('...');
@@ -98,7 +99,7 @@ export default function MyProfile() {
 
       <p className="text-[20px] font-bold my-5">Posts</p>
 
-      <div className="flex justify-center lg:bg-white rounded-[16px] w-full lg:px-6 lg:py-16">
+      <div className="flex justify-center lg:bg-white rounded-[16px] lg:min-w-[90%] lg:px-6 lg:py-16">
         {/* Renderiza os posts */}
         {stateUser && <RenderUserPublications user={stateUser} /> }
       </div>
