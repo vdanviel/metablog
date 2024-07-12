@@ -14,7 +14,7 @@ import ForgetPassword from "./main/forget_password.jsx";
 import VerifyForgetPassword from "./main/token_user.jsx";
 import ChangePassword from "./main/change_password.jsx";
 import Feed from "./main/feed.jsx";
-import MyProfile from "./main/profile/my_profile.jsx";
+import MyProfile from "./main/profile.jsx";
 
 //pinned components
 import Header from "./components/main/navbar.jsx";
@@ -87,10 +87,10 @@ const modifiedrouter = createBrowserRouter([
     )
   },
   {
-    path: "profile",
+    path: "profile/:nick",
     element: (
       <Auth auth={user}>
-        <MyProfile/>
+        <MyProfile />
       </Auth>
     )
   },

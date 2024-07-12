@@ -3,6 +3,7 @@ import Modal from "../../components/modal.jsx";
 //icons
 import { FaRocketchat } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 import { MdOutlineExplore } from "react-icons/md";
 import { FaInfo } from "react-icons/fa";
 import { useState } from "react";
@@ -11,6 +12,7 @@ import { ImExit } from "react-icons/im";
 export default function Navbar(){
 
   const [stateToggle, setToggle] = useState(false);
+  const user = JSON.parse(localStorage.getItem('user'));
 
   const sendToMain = () => {
 
@@ -41,8 +43,9 @@ export default function Navbar(){
   const modal_mobile_content = (
     <div className="min-w-[200px]">
         <div>
+          <a href="/feed" className="flex items-center px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> <FaHome className="mr-2"/> Feed </a>
           <a href="/explore" className="flex items-center px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> <MdOutlineExplore className="mr-2"/> Explore </a>
-          <a href="/profile" className="flex items-center px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> <FaUser className="mr-2" /> Your Profile </a>
+          <a href={"/profile/" + user.nick} className="flex items-center px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> <FaUser className="mr-2" /> Your Profile </a>
           <a href="/about" className="flex items-center px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> <FaInfo className="mr-2"/> Info </a>
           <a onClick={logOut} className="flex items-center px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> <ImExit className="mr-2"/> Sign Out </a>
         </div>
@@ -52,7 +55,7 @@ export default function Navbar(){
   return (
     <div>
 
-      <Modal onOpen={stateToggle} onClose={closeMenu} title="Options" content={modal_mobile_content} />
+      <Modal onOpen={stateToggle} onClose={closeMenu} title={user.name} content={modal_mobile_content} />
 
       <nav className='absolute inset-x-0 top-0 h-16 px-5 pt-3'>
         <div className="flex justify-between items-center">
@@ -65,10 +68,11 @@ export default function Navbar(){
             <svg height="32px" width="32px" version="1.1" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" ><path d="M4,10h24c1.104,0,2-0.896,2-2s-0.896-2-2-2H4C2.896,6,2,6.896,2,8S2.896,10,4,10z M28,14H4c-1.104,0-2,0.896-2,2  s0.896,2,2,2h24c1.104,0,2-0.896,2-2S29.104,14,28,14z M28,22H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h24c1.104,0,2-0.896,2-2  S29.104,22,28,22z"/></svg>
           </button>
 
-          <div className="hidden lg:flex space-x-4">
-            <a className="font-bold" href="/explore"><MdOutlineExplore size={22}/></a>
+          <div className="hidden lg:flex space-x-4 flex items-center justify-center">
+            <a className="font-bold" href="/feed"><FaHome size={26}/></a>
+            <a className="font-bold" href="/explore"><MdOutlineExplore size={26}/></a>
             <a className="font-bold" href="/about"><FaInfo size={22}/></a>
-            <a className="font-bold" href="/profile"><FaUser size={22} /></a>
+            <a className="font-bold" href={"/profile/" + user.nick}><FaUser size={22} /></a>
             <a className="font-bold cursor-pointer" onClick={logOut}><ImExit size={22}/></a>
           </div>
 

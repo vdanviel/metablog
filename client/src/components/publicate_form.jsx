@@ -95,6 +95,7 @@ export default function PublicateForm(props) {
         document.querySelector("#error_content").innerHTML = ""
 
         let formdata = new FormData();
+        
         formdata.append("id_user", id_user);
         formdata.append("content", content);
         
@@ -132,7 +133,7 @@ export default function PublicateForm(props) {
         }
 
         //dando callback para o Feed.jsx atualizar os posts atuais..
-        onPublish(content, mediaFiles);
+        onPublish();
 
         setContent("");
         mediaFiles.splice(0, mediaFiles.length);
@@ -140,7 +141,6 @@ export default function PublicateForm(props) {
         document.getElementById('media-upload').value = [];
         previewMedia([])
 
-        console.log(mediaFiles);
         console.log(document.getElementById('media-upload').value);
 
         setbtnText("Write something to publish...");

@@ -88,29 +88,13 @@ userRouter.post('/register', async (req, res) => {
 
 });
 
-userRouter.get('/find/:id', async (req, res) => {
+userRouter.get('/find/:nick', async (req, res) => {
 
     try {
 
-        let required = ['id'];
+        const user = await controller.find(req.params.nick)
 
-        let validating = utils.validate(req.params,required);
-
-        if (validating === true) {
-
-            const user = await controller.find(req.params.id)
-
-            return res.status(200).json(user);
-
-        }else{
-
-            return res.status(400).json({
-                status: false,
-                text: "Please fill in the required fields.",
-                missing: validating
-            });
-
-        }
+        return res.status(200).json(user);
 
     } catch (error) {
         
@@ -373,30 +357,13 @@ userRouter.patch('/change-password', async (req, res) => {
 
 });
 
-userRouter.get('/info/:nick', async (req, res) => {
+userRouter.get('/info/:nick/:offset/:limit', async (req, res) => {
 
     try {
         
-        const required = ['nick'];
+        const info = await controller.user_posts(req.params.nick, req.params.offset, req.params.limit);
 
-        const validate = utils.validate(req.params, required);
-
-        if (validate == true) {
-            
-            const info = await controller.user_info(req.params.nick);
-
-            return res.status(200).json(info);
-
-        }else{
-
-            return res.status(400).json({
-                status: false,
-                text: "Please fill in the required fields.",
-                missing: validate
-            });
-
-        }
-
+        return res.status(200).json(info);
         
 
     } catch (error) {

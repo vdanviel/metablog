@@ -68,7 +68,7 @@ const controller = {
         } catch (error) {
           return {
             status: false,
-            text: "Internal server error on controller/user.",
+            text: "Internal server error on controller/token.",
             error: {
                 message: error.message,
                 stack: error.stack,
@@ -114,7 +114,7 @@ const controller = {
         } catch (error) {
           return {
             status: false,
-            text: "Internal server error on controller/user.",
+            text: "Internal server error on controller/token.",
             error: {
                 message: error.message,
                 stack: error.stack,

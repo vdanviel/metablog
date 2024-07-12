@@ -21,19 +21,25 @@ const controller = {
             const users = await userModelInstance.index();
             return users;
         } catch (error) {
-            return {
-                status: false,
-                text: "Internal server error on controller/user.",
-                erro: error
+          return {
+            status: false,
+            text: "Internal server error on controller/user.",
+            error: {
+                message: error.message,
+                stack: error.stack,
+                file: error.fileName, 
+                line: error.lineNumber, 
+                column: error.columnNumber, 
             }
+          };
         }
     },
 
-    async find(id){
+    async find(nick){
 
         try {
             
-            const query = { _id: new mongodb.ObjectId(id) };
+            const query = { nick: nick };
 
             const options = {
 
@@ -53,14 +59,33 @@ const controller = {
             // Execute query
             const user = await usercoll.findOne(query, options);
 
+            //a qnt de posts desse usuário..
+            const posts_count = await postcoll.countDocuments({user_id: new mongodb.ObjectId(user._id)});
+                        
+            //a qnt de usuários que esse usuário segue..
+            const followers_count = await usercoll.countDocuments({ _id: { $in: user.followers } });   
+
+            //a qnt de usuários que seguem esse usuário..
+            const following_count = await usercoll.countDocuments({ _id: { $in: user.following } });
+
+            Object.assign(user, {posts_count: posts_count});
+            Object.assign(user, {followers_count: followers_count});
+            Object.assign(user, {following_count: following_count});
+
             return user;
 
         } catch (error) {
-            return {
-                status: false,
-                text: "Internal server error on controller/user.",
-                erro: error
+          return {
+            status: false,
+            text: "Internal server error on controller/user.",
+            error: {
+                message: error.message,
+                stack: error.stack,
+                file: error.fileName, 
+                line: error.lineNumber, 
+                column: error.columnNumber, 
             }
+          };
         }
         
     },
@@ -226,7 +251,7 @@ const controller = {
         }
     },    
 
-    async user_info(nickname) {
+    async user_posts(nickname,offset,limit) {
 
         try {
 
@@ -242,24 +267,20 @@ const controller = {
 
             }
 
-            //os usuários que esse usuário segue..
-            const followers = await usercoll.find({ _id: { $in: existed.followers } }, {projection: {name:1,nick:1,photo:1,banner:1}} ).toArray();   
-
-            //os usuários que seguem esse usuário..
-            const following = await usercoll.find({ _id: { $in: existed.following } }, {projection: {name:1,nick:1,photo:1,banner:1}}  ).toArray();
-
             //os posts desse usuário..
-            const posts = await PostModelInstance.find({user_id: new mongodb.ObjectId(existed._id)});
+            const posts = await postcoll.find({user_id: new mongodb.ObjectId(existed._id)}).skip(Number(offset)).limit(Number(limit) + 1).sort({created_at: -1}).toArray();
+            
+            let more = false;
 
-            //o usuário requisitado..
-            const user = await usercoll.findOne({_id: existed._id}, {projection: {password:0, email:0, _id:0}});
+            if (posts.length > limit) {
+                more = true;
+                posts.pop();
+            }
 
             return {
                 status: true,
-                user: user,
-                followers: followers,
-                following: following,
-                posts: posts
+                posts: posts,
+                more_posts: more
             }
 
         } catch (error) {
@@ -278,7 +299,6 @@ const controller = {
         }
 
     },
-
     async login(email, password){
 
         try {

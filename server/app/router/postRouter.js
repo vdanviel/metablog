@@ -87,26 +87,11 @@ postRouter.post('/', upload.array('medias', 10), async (req, res) => {
 postRouter.get('/all/:id_user/:offset/:limit', async (req, res) => {
     
     try {
-        
-        let required = ['id_user', 'offset', 'limit'];
 
-        let validating = utils.validate(req.params, required);
+        const feed = await controller.all(req.params.id_user, req.params.offset, req.params.limit);
 
-        if(validating == true){
+        return res.status(200).json(feed);
 
-            const feed = await controller.all(req.params.id_user, req.params.offset, req.params.limit);
-
-            return res.status(200).json(feed);
-
-        }else{
-
-            return res.status(400).json({
-                status: false,
-                text: "Please fill in the required fields.",
-                missing: validating
-            });
-
-        }
 
     } catch (error) {
         return res.status(500).json({
