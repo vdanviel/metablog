@@ -185,12 +185,18 @@ const controller = {
             }
     
             // Atualiza a foto do usuário
-            const updated = await userModelInstance.update(id, {$set: { "photo": url_photo }});
+            const updated = await usercoll.updateOne({_id: new mongodb.ObjectId(id)}, {$set: { "photo": url_photo }});
 
-            if (!updated) {
+            console.log(updated);
+
+            if (updated.modifiedCount < 1) {
+
+                let err = JSON.stringify(updated)
+
                 return {
                     status: false,
                     text: "It wasn't possible to save the photo in ours databases. Try again later.",
+                    reason: err
                 };
             }
 
@@ -215,7 +221,7 @@ const controller = {
         try {
 
             // Verifica se o usuário existe antes de atualizar a foto
-            const user = await userModelInstance.findbyid(id);
+            const user = await usercoll.findOne({"_id": new mongodb.ObjectId(id)});
             
             if (!user) {
                 return {
@@ -224,13 +230,17 @@ const controller = {
                 };
             }
     
-            // Atualiza a foto do usuário
-            const updated = await userModelInstance.update(id, {$set: { "banner": url_banner }});
+            // Atualiza a foto do banner
+            const updated = await usercoll.updateOne(
+                { _id: new mongodb.ObjectId(id) }, 
+                { $set: { banner: url_banner } }
+            );
 
-            if (!updated) {
+            if (updated.modifiedCount < 1) {
                 return {
                     status: false,
                     text: "It wasn't possible to save the photo in ours databases. Try again later.",
+                    reason: updated
                 };
             }
 
@@ -310,8 +320,7 @@ const controller = {
             // Verificar se algum usuário foi encontrado
             if (existed) {
 
-                var bytes  = CryptoJS.AES.decrypt(existed.password, config.crytokey);
-                var original_password = bytes.toString(CryptoJS.enc.Utf8);
+                var original_password  = CryptoJS.AES.decrypt(existed.password, config.crytokey).toString(CryptoJS.enc.Utf8);
 
                 if (original_password == password) {
                     
@@ -355,7 +364,72 @@ const controller = {
 
     },
 
-    async follow(follower_id, following_id){
+    async follow(follower_id, following_nickname){
+
+        try {
+            
+            // Verificar se os usuários existem
+            const follower = await userModelInstance.findbyid(follower_id);
+            const following = await usercoll.findOne({nick: following_nickname});
+
+            if (!follower || !following) {
+                
+                return {
+                    status: false,
+                    text: "The user does not exists."
+                };
+
+            }
+            
+            //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
+            //equals() - https://www.mongodb.com/docs/atlas/atlas-search/equals/#std-label-equals-ref (leia a primeira parte)
+            //variavel que verifica no array de usuario sendo seguidos se ja existe algum com o id do usuario trajeto a ser seguido..
+            let compare = follower.following.some(id => id.equals(following._id));
+
+            //se usuário já segue o following..
+            if (compare) {
+
+                //vetar
+                return {
+                    status: false,
+                    text: `You follow @${following.nick} already.`
+                };
+
+            }
+
+            //https://www.mongodb.com/docs/manual/reference/operator/update/push/#mongodb-update-up.-push
+            //usuario seguidor recebe quem está seguindo..
+            const handleing_follower = await userModelInstance.update(follower_id, { $push: { following: new mongodb.ObjectId(following_id) }})
+
+            //usuario seguido recebe o seguidor..
+            const handleing_following = await userModelInstance.update(following_id, { $push: { followers: new mongodb.ObjectId(follower_id) }})
+            
+            if (handleing_follower == false || handleing_following == false) {
+                
+                return {
+                    status: false,
+                    text: "It wasn't possible to follow the user."
+                };
+
+            }            
+
+            return {
+                status: true,
+                text: `You've successfully followed @${following.nick}!`,
+
+            }
+
+        } catch (error) {
+            return {
+                status: false,
+                text: "Internal server error on controller/post.",
+                erro: error
+            }
+        }
+
+    },
+
+    async unfollow(follower_id, following_id){
 
         try {
             
@@ -420,6 +494,7 @@ const controller = {
         }
 
     },
+
     async resetPassword(id_user, type, token, newPassword) {
 
         try {
@@ -499,7 +574,16 @@ const controller = {
             
             const user = await usercoll.findOne({"_id": new mongodb.ObjectId(id_user)});
 
-            if (user.password != password) {
+            if (!user) {
+                return {
+                    status: false,
+                    text: "User not found."
+                };
+            }
+
+            let original_password  = CryptoJS.AES.decrypt(user.password, config.crytokey).toString(CryptoJS.enc.Utf8);
+
+            if (original_password != password) {
                 
                 return {
                     status: false,
@@ -510,7 +594,9 @@ const controller = {
 
                 const deleted = await usercoll.deleteOne({"_id": new mongodb.ObjectId(id_user)});
 
-                if(deleted.deletedCount > 0){
+                const posts_deleted = await postcoll.deleteMany({"user_id": new mongodb.ObjectId(id_user)});
+
+                if(deleted.deletedCount > 0 && posts_deleted.deletedCount > 0){
 
                     return {
                         status: true,
@@ -522,7 +608,7 @@ const controller = {
                     return {
                         status: false,
                         text: "Error on deleting account.",
-                        err: deleted
+                        reason: deleted
                     }
 
                 }
@@ -548,11 +634,33 @@ const controller = {
 
             // Verifica se o usuário existe antes de atualizar a foto
             const user = await userModelInstance.findbyid(id_user);
-            
+
             if (!user) {
                 return {
                     status: false,
                     text: "User not found."
+                };
+            }
+
+            //verificar se existe um email com o mesmo valor..
+            let emailexisted = await userModelInstance.find({"email": email});
+
+            // Verificar se algum usuário foi encontrado
+            if (emailexisted.length > 0) {
+                return {
+                    status: false,
+                    text: "Someone uses this Email already.",
+                };
+            }
+
+            //verificar se existe um nick com o mesmo valor..
+            let nickexisted = await userModelInstance.find({"nick": nick});
+
+            // Verificar se algum usuário foi encontrado
+            if (nickexisted.length > 0) {
+                return {
+                    status: false,
+                    text: "Someone uses this Nickname already.",
                 };
             }
             
@@ -572,14 +680,20 @@ const controller = {
             // Atualiza a foto do usuário
             const updated = await usercoll.updateOne(filter, updateDoc);
 
-            if (updated.modifiedCount < 0) {
+            if (updated.modifiedCount < 1) {
                 return {
                     status: false,
                     text: "Error on updating the account.",
+                    reason:updated
                 };
-            }
+            }else{
 
-            return updated;
+                return {
+                    status: true,
+                    text: "Account successfully updated!"
+                }
+
+            }
             
         } catch (error) {
             return {

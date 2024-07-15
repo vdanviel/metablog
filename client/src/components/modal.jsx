@@ -12,7 +12,7 @@ const Modal = ({ onOpen, onClose, title, content }) => {
     
             {/* Cabeçalho do modal */}
             <div className="flex items-center justify-between p-5 border-b border-gray-200">
-              <h3 className="text-lg font-semibold">{title}</h3>
+              <h3 className="text-lg font-semibold mr-3">{title}</h3>
               <button
                 className="text-gray-500 hover:text-gray-600"
                 onClick={onClose}

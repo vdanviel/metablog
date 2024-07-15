@@ -51,7 +51,6 @@ export default function RenderUserPublications({user}) {
 
     };
 
-
     useEffect(() => {
 
         loadMorePosts();
@@ -156,7 +155,7 @@ export default function RenderUserPublications({user}) {
         next={loadMorePosts}
         hasMore={hasMore}
         loader={<h4>Loading...</h4>}
-        endMessage={<p style={{ textAlign: 'center' }}><p className="text-gray-500 flex justify-center items-center mt-4"><TfiMinus /></p></p>}
+        endMessage={<div style={{ textAlign: 'center' }}><p className="text-gray-500 flex justify-center items-center mt-4"><TfiMinus /></p></div>}
         >
         {renderPosts(user, posts)}
         </InfiniteScroll>
