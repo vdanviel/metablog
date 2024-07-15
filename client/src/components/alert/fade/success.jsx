@@ -20,7 +20,7 @@ export default function AlertFadeSuccess({ message, duration }) {
     return (
       <div
         className={classNames(
-          'fixed bottom-0 left-1/2 my-2 mb-10 flex -translate-x-1/2 transform cursor-default items-center transition-opacity duration-500',
+          'z-50 fixed bottom-0 left-1/2 my-2 mb-10 flex -translate-x-1/2 transform cursor-default items-center transition-opacity duration-500',
           {
             'opacity-0': !visible,
             'opacity-100': visible,

@@ -309,45 +309,49 @@ const controller = {
         }
 
     },
-    async login(email, password){
 
+    async login(email, password) {
         try {
-            
-            //verificar se existe um email com o mesmo valor..
-
-            let existed = await usercoll.findOne({"email": email});
-
+            // Verificar se existe um email ou nick com o mesmo valor..
+            let existed = await usercoll.findOne({
+                $or: [
+                    { "email": email },
+                    { "nick": email }
+                ]
+            });
+    
             // Verificar se algum usuário foi encontrado
             if (existed) {
-
-                var original_password  = CryptoJS.AES.decrypt(existed.password, config.crytokey).toString(CryptoJS.enc.Utf8);
-
+                var original_password = CryptoJS.AES.decrypt(existed.password, config.crytokey).toString(CryptoJS.enc.Utf8);
+    
                 if (original_password == password) {
-                    
-                    let user = await usercoll.findOne({"email": email}, {projection: {password:0, email:0}});
-
+                    let user = await usercoll.findOne(
+                        {
+                            $or: [
+                                { "email": email },
+                                { "nick": email }
+                            ]
+                        },
+                        { projection: { password: 0, email: 0 } }
+                    );
+    
                     return {
                         status: true,
-                        text: "Authenticated sucessfully.",
+                        text: "Authenticated successfully.",
                         user: JSON.stringify(user)
                     };
-
-                }else{
-
+                } else {
                     return {
                         status: false,
-                        text: "The password is incorrect.",
+                        text: "The password is incorrect."
                     };
-
                 }
-
-            }else{
+            } else {
                 return {
                     status: false,
-                    text: "This email doesn't exist on Metablog.",
+                    text: "This email or nick doesn't exist on Metablog."
                 };
             }
-
         } catch (error) {
             return {
                 status: false,
@@ -355,15 +359,14 @@ const controller = {
                 error: {
                     message: error.message,
                     stack: error.stack,
-                    file: error.fileName, 
-                    line: error.lineNumber, 
-                    column: error.columnNumber, 
+                    file: error.fileName,
+                    line: error.lineNumber,
+                    column: error.columnNumber
                 }
             };
         }
-
     },
-
+    
     async follow(follower_id, following_nickname){
 
         try {
@@ -433,57 +436,10 @@ const controller = {
 
         try {
             
-            // Verificar se os usuários existem
-            const follower = await userModelInstance.findbyid(follower_id);
-            const following = await userModelInstance.findbyid(following_id);
-
-            if (!follower || !following) {
-                
-                return {
-                    status: false,
-                    text: "The user does not exists."
-                };
-
-            }
-
-            
-            //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
-            //equals() - https://www.mongodb.com/docs/atlas/atlas-search/equals/#std-label-equals-ref (leia a primeira parte)
-            //variavel que verifica no array de usuario sendo seguidos se ja existe algum com o id do usuario trajeto a ser seguido..
-            let compare = follower.following.some(id => id.equals(following._id));
-
-            //se usuário já segue o following..
-            if (compare) {
-
-                //vetar
-                return {
-                    status: false,
-                    text: `You follow @${following.nick} already.`
-                };
-
-            }
-
-            //https://www.mongodb.com/docs/manual/reference/operator/update/push/#mongodb-update-up.-push
-            //usuario seguidor recebe quem está seguindo..
-            const handleing_follower = await userModelInstance.update(follower_id, { $push: { following: new mongodb.ObjectId(following_id) }})
-
-            //usuario seguido recebe o seguidor..
-            const handleing_following = await userModelInstance.update(following_id, { $push: { followers: new mongodb.ObjectId(follower_id) }})
-            
-            if (handleing_follower == false || handleing_following == false) {
-                
-                return {
-                    status: false,
-                    text: "It wasn't possible to follow the user."
-                };
-
-            }            
-
-            return {
-                status: true,
-                text: `You've successfully followed @${following.nick}!`,
-
-            }
+            // db.stores.updateMany(
+            //     { },
+            //     { $pull: { fruits: { $in: [ "apples", "oranges" ] }, vegetables: "carrots" } }
+            // )
 
         } catch (error) {
             return {
@@ -629,7 +585,7 @@ const controller = {
         }
     },
 
-    async update_user(id_user, name, nick, bio, email) {
+    async update_user(id_user, name, nick, bio) {
         try {
 
             // Verifica se o usuário existe antes de atualizar a foto
@@ -642,26 +598,25 @@ const controller = {
                 };
             }
 
-            //verificar se existe um email com o mesmo valor..
-            let emailexisted = await userModelInstance.find({"email": email});
-
-            // Verificar se algum usuário foi encontrado
-            if (emailexisted.length > 0) {
-                return {
-                    status: false,
-                    text: "Someone uses this Email already.",
-                };
-            }
-
             //verificar se existe um nick com o mesmo valor..
             let nickexisted = await userModelInstance.find({"nick": nick});
 
             // Verificar se algum usuário foi encontrado
             if (nickexisted.length > 0) {
-                return {
-                    status: false,
-                    text: "Someone uses this Nickname already.",
-                };
+
+                if (nickexisted[0]._id == id_user) {
+                    
+                    null;
+
+                } else{
+
+                    return {
+                        status: false,
+                        text: "Someone uses this Nickname already.",
+                    };
+
+                }
+
             }
             
             // Create a filter for movies with the title "Random Harvest"
@@ -672,8 +627,7 @@ const controller = {
                 $set: {
                     name: name,
                     nick: nick,
-                    bio: bio,
-                    email: email,
+                    bio: bio
                 }
             };
 

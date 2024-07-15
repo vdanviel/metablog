@@ -145,10 +145,7 @@ userRouter.patch('/upload-photo', uploaduserphoto.single('image'), async (req, r
         let saved = await controller.update_user_photo(req.body.id, imgname);
 
         if (saved.status == false) {
-            return res.status(400).json({
-                status: false,
-                text: saved.text
-            });
+            return res.status(400).json(saved);
         }
 
         return res.status(200).json(saved);
@@ -184,10 +181,7 @@ userRouter.patch('/upload-banner', uploaduserphoto.single('image'), async (req, 
         let saved = await controller.update_user_banner(req.body.id, imgname)
 
         if (saved.status == false) {
-            return res.status(400).json({
-                status: false,
-                text: saved.text
-            });
+            return res.status(400).json(saved);
         }
 
         return res.status(200).json(saved);
@@ -203,7 +197,6 @@ userRouter.patch('/upload-banner', uploaduserphoto.single('image'), async (req, 
         });
     }
 });
-
 
 userRouter.post('/login', async (req, res) => {
 
@@ -361,7 +354,7 @@ userRouter.put('/update', async (req, res) => {
 
     try {
 
-        let required = ['id_user', 'name', 'nick', 'bio', 'email'];
+        let required = ['id_user', 'name', 'nick', 'bio'];
 
         let validating = utils.validate(req.body,required);
 
@@ -390,7 +383,11 @@ userRouter.put('/update', async (req, res) => {
 
             }
 
-            const updated = await controller.update_user(req.body.id_user, req.body.name, req.body.nick, req.body.bio, req.body.email)
+            const updated = await controller.update_user(req.body.id_user, req.body.name, req.body.nick, req.body.bio)
+
+            if (updated.status == false) {
+                return res.status(400).json(updated);
+            }
 
             return res.status(200).json(updated);
 

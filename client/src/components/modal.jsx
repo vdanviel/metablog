@@ -2,7 +2,7 @@ const Modal = ({ onOpen, onClose, title, content }) => {
   
   if (onOpen == true) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+      <div className="fixed inset-0 z-40 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
         <div className="relative w-auto max-w-3xl mx-auto my-6">
         <div className="fixed z-10 inset-0 bg-gray-500 opacity-75" onClick={onClose}></div>
           {/* Conteúdo do modal */}

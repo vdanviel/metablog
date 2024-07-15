@@ -29,13 +29,18 @@ export default function MyProfile() {
   const params = useParams();
 
   const [stateModalEdit, setModalEdit] = useState(false);
+  const [stateBtnEditActivate, setBtnEditActivate] = useState(false);
+  const [stateEditBtnContent, setEditBtnContent] = useState("Cannot be equal");
+
   const [stateModalDelete, setModalDelete] = useState(false);
 
   const [stateBtnFollowActivate, setBtnFollowActivate] = useState(false);
-  const [stateBtnContent, setBtnContent] = useState(false);
+  const [stateBtnFollowContent, setBtnFollowContent] = useState(false);
 
-  const [stateMidiaErrorFade, setMidiaErrorFade] = useState(false);
-  const [stateMidiaSuccessFade, setMidiaSuccessFade] = useState(false);
+  const [stateErrorFade, setErrorFade] = useState(false);
+  const [stateErrorFadeContent, setErrorFadeContent] = useState(null);
+  const [stateSuccessFade, setSuccessFade] = useState(false);
+  const [stateSuccessFadeContent, setSuccessFadeContent] = useState(null);
 
   const getUser = async (nick) => {
     try {
@@ -57,7 +62,7 @@ export default function MyProfile() {
 
     const data = await getUser(params.nick);
 
-    console.log(data);
+    //console.log(data);
 
     if (data) {
       setName(data.name);
@@ -71,7 +76,7 @@ export default function MyProfile() {
       setUser(data);
     }
 
-
+    return data;
 
   };
 
@@ -81,12 +86,7 @@ export default function MyProfile() {
 
   }, [stateName, stateNick, stateBio, statePhoto, stateBanner]);
 
-  const fetchEdit = () => {
-
-    console.log(true);
-
-  }
-
+  //dalvar banner
   const fetchNewBgImage = async (e) => {
     
     const file = e.target.files[0];
@@ -104,75 +104,347 @@ export default function MyProfile() {
     const response = await fetch("http://localhost:8005/user/upload-banner", requestOptions);
     const data = await response.json();
 
-    if (data.status == false) {
+    if (data.status && data.status == false) {
       
-      setMidiaErrorFade(true);
+      setErrorFade(true);
+
+      setErrorFadeContent(data.text);
 
       setTimeout(() => {
 
-        setMidiaErrorFade(false);
+        setErrorFade(false);
 
       }, 2500)
 
     }else{
 
-      setMidiaSuccessFade(true)
+      setSuccessFade(true);
+
+      setSuccessFadeContent("Successfylly saved banner!");
 
       setTimeout(() => {
 
-        setMidiaSuccessFade(false);
+        setSuccessFade(false);
 
       }, 2500);
 
-      handleProfilePage();
+      const new_public_user = await handleProfilePage();
+
+      //atualizando o localstorage..
+      let currentUserData = JSON.parse(localStorage.getItem('user'));
+
+      currentUserData.banner = new_public_user.banner;
+
+      localStorage.setItem('user', JSON.stringify(currentUserData));
 
     }
 
   }
 
-  const fetchNewProfileImage = (e) => {
+  //salvar foto de peril
+  const fetchNewProfileImage = async (e) => {
 
-    const file = e.target.files;
+    const file = e.target.files[0];
 
-    console.log(file);
+    let formdata = new FormData();
+    formdata.append("id", user._id);
+    formdata.append("image", file);
+
+    let requestOptions = {
+      method: 'PATCH',
+      body: formdata,
+      redirect: 'follow'
+    };
+
+    try {
+      
+      const response = await fetch("http://localhost:8005/user/upload-photo", requestOptions);
+      const data = await response.json();
+
+      if (data.status == false) {
+        
+        setErrorFade(true);
+
+        setErrorFadeContent(data.text);
+
+        setTimeout(() => {
+
+          setErrorFade(false);
+
+        }, 2500)
+
+      }else{
+
+        setSuccessFade(true)
+
+        setSuccessFadeContent("Successfylly saved profile picture!");
+
+        setTimeout(() => {
+
+          setSuccessFade(false);
+
+        }, 2500);
+
+        const new_public_user = await handleProfilePage();
+
+        //atualizando o localstorage..
+        let currentUserData = JSON.parse(localStorage.getItem('user'));
+
+        currentUserData.photo = new_public_user.photo;
+
+        localStorage.setItem('user', JSON.stringify(currentUserData));
+
+      }
+
+    } catch (error) {
+      
+      console.error(error);
+
+    }
 
   }
+
+  //editar
+  const fetchEdit = async (e) => {
+
+    e.preventDefault();
+
+    let name = document.querySelector('#editname');
+    let nick = document.querySelector('#editnick');
+    let bio = document.querySelector('#editbio');
+    
+    setEditBtnContent("Loading...");
+    setBtnEditActivate(false);
+
+    document.getElementById('error_name').innerHTML = ""
+    name.classList.remove('border-red-400');
+    document.getElementById('error_nick').innerHTML = ""
+    nick.classList.remove('border-red-400');
+    document.getElementById('error_bio').innerHTML = ""
+    bio.classList.remove('border-red-400');
+
+    try {
+      
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
+        "id_user": user._id,
+        "name": name.value,
+        "nick": nick.value,
+        "bio": bio.value
+      });
+
+      var requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+
+      const response = await fetch("http://localhost:8005/user/update", requestOptions);
+      const data = await response.json();
+
+      if (data.status == false) {
+        
+       if (data.missing) {
+        
+        data.missing.forEach(element => {
+          
+          switch (element) {
+
+            case 'name':
+              
+              document.getElementById('error_name').innerHTML = "Name is required."
+              name.classList.add('border-red-400');
+              
+              break;
+
+            case 'nick':
+
+              document.getElementById('error_nick').innerHTML = "Nickname is required."
+              nick.classList.add('border-red-400');
+              
+              break;
+
+            case 'bio':
+
+              document.getElementById('error_bio').innerHTML = "Bio is required."
+              bio.classList.add('border-red-400');
+              
+              break;
+          
+            default:
+
+              console.error("Name of shields don't match.");
+
+              break;
+          }
+
+        });
+
+       }else{
+
+        document.querySelector('#error').innerText = data.text;
+
+       }
+
+      }else{
+
+        //mudando os dados do localstorage..
+        const new_public_user = await handleProfilePage();
+
+        //atualizando o localstorage..
+        let currentUserData = JSON.parse(localStorage.getItem('user'));
+
+        currentUserData.name = new_public_user.name;
+        currentUserData.nick = new_public_user.nick;
+        currentUserData.bio = new_public_user.bio;
+
+        localStorage.setItem('user', JSON.stringify(currentUserData));
+
+        name.value = stateName;
+        nick.value = stateNick;
+        bio.value = stateBio;
+
+        //dando alerte de sucesso..
+        setSuccessFade(true);
+
+        setSuccessFadeContent(data.text);
+
+        setTimeout(() => {
+          setSuccessFade(false);
+        }, 2500);
+
+      }
+
+      setEditBtnContent("Cannot be equal");
+      setBtnEditActivate(false);
+
+    } catch (error) {
+      
+      console.error(error);
+
+    }
+
+  }
+
+  //se usuario não alterar o valor original ele n pode editar..
+  const handleInputChange = (e) => {
+    const { id, value } = e.currentTarget;
+  
+    switch (id) {
+      case "editname":
+        if (value !== user.name) {
+          
+          setEditBtnContent("Edit");
+          setBtnEditActivate(true);
+        } else {
+
+          setEditBtnContent("Cannot be equal");
+          setBtnEditActivate(false);
+          
+        }
+        break;
+  
+      case "editnick":
+        if (value !== user.nick) {
+          
+          setEditBtnContent("Edit");
+          setBtnEditActivate(true);
+        } else {
+
+          setEditBtnContent("Cannot be equal");
+          setBtnEditActivate(false);
+          
+        }
+        break;
+  
+      case "editbio":
+        if (value !== user.bio) {
+          setEditBtnContent("Edit");
+          setBtnEditActivate(true);
+        } else {
+
+          setEditBtnContent("Cannot be equal");
+          setBtnEditActivate(false);
+          
+        }
+        break;
+  
+      default:
+        break;
+    }
+  };
 
   const edit_md_content = (
 
     <form>
-        <div className="w-full mt-4">
-            <input
-                className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
-                type="email"
-                placeholder="Email Address"
-                id='inemail'
-            />
-            <small id="error_email" className="font-bold text-[#f01313]"></small>
-        </div>
+
+      <div className="m-3">
 
         <div className="w-full mt-4">
-            <input
-                className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
-                type="password"
-                id='inpassword'
-                placeholder="Make sure to remember it"
-                aria-autocomplete=''
-            />
-            <small id="error_password" className="font-bold text-[#f01313]"></small>
-        </div>
+              <input
+                  className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                  type="text"
+                  placeholder="Name"
+                  id='editname'
+                  defaultValue={user.name}
+                  onChange={handleInputChange}
+              />
+              <small id="error_name" className="font-bold text-[#f01313]"></small>
+          </div>
 
-        <p id="error" className="font-bold text-[#f01313] mt-4 text-center"></p>
+          <div>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                @
+              </div>
+              <input
+                id="editnick"
+                placeholder="Nickname"
+                type="text"
+                className="block w-full pl-10 px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none"
+                maxLength="15"
+                defaultValue={user.nick}
+                onChange={handleInputChange}
+              />
+            </div>
+            <small id="error_nick" className="font-bold text-red-600"></small>
+          </div>
+
+          <div className="sm:col-span-2">
+            <textarea
+              id="editbio"
+              maxLength={100}
+              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md resize-none focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none"
+              style={{ height: "100px" }}
+              placeholder="Biografy"
+              defaultValue={user.bio}
+              onChange={handleInputChange}
+            />
+            <small id="error_bio" className="font-bold text-red-600"></small>
+          </div>
+
+          <p id="error" className="font-bold text-[#f01313] mt-4 text-center"></p>
+
+      </div>
 
         <div className="flex items-center justify-between mt-4">
             
-            <Button activate={stateBtnFollowActivate} bg_color="#3b82f6" hover_bg_color="#4f65ff" font_color="white" content={stateBtnContent} txtsize="16px" type="submit" onClick={fetchEdit} />
+            <Button activate={stateBtnEditActivate} bg_color={stateBtnEditActivate == false ? "#d1d1d1" : "#3b82f6" } hover_bg_color="#4f65ff" font_color="white" content={stateEditBtnContent} txtsize="16px" type="submit" onClick={fetchEdit} />
 
         </div>
     </form>
 
-
   );
+
+  //deletar
+  const fetchDelete = () => {
+
+    console.log(true);
+
+  }
 
   const delete_md_content = (
 
@@ -202,7 +474,7 @@ export default function MyProfile() {
 
         <div className="flex items-center justify-between mt-4">
             
-            <Button activate={stateBtnFollowActivate} bg_color="#3b82f6" hover_bg_color="#4f65ff" font_color="white" content={stateBtnContent} txtsize="16px" type="submit" onClick={fetchEdit} />
+            <Button activate={stateBtnFollowActivate} bg_color="#3b82f6" hover_bg_color="#4f65ff" font_color="white" content={stateBtnFollowContent} txtsize="16px" type="submit" onClick={fetchDelete} />
 
         </div>
     </form>
@@ -210,6 +482,7 @@ export default function MyProfile() {
 
   );
 
+  //verifica se é conta do usuario ou um perfil..
   const account_or_profile = () => {
 
     if (params.nick == user.nick) {
@@ -218,8 +491,10 @@ export default function MyProfile() {
         <div className="inline-flex items-center justify-center">
 
           <span className="bg-white rounded-[16px] p-4 inline-flex items-center space-x-4">
-            <MdEdit className="cursor-pointer" onClick={() => setModalEdit(!stateModalEdit)} size={40}/>
-            <MdDeleteForever className="cursor-pointer" onClick={() => setModalDelete(!stateModalDelete)} color="red" size={40}/>
+            
+            <MdEdit className="cursor-pointer" onClick={() => setModalEdit(!stateModalEdit)} size={window.innerWidth < 750 ? 30 : 40}/>
+            <MdDeleteForever className="cursor-pointer" onClick={() => setModalDelete(!stateModalDelete)} color="red" size={window.innerWidth < 750 ? 30 : 40}/>
+
           </span>
 
         </div>
@@ -235,6 +510,7 @@ export default function MyProfile() {
 
   }
 
+  //hmtl retornado..
   return (
     <div className="flex flex-col justify-center items-center mt-[10vh]">
       
@@ -244,11 +520,11 @@ export default function MyProfile() {
       {/* modal deletar */}
       <Modal content={delete_md_content} onClose={() => setModalDelete(false)} onOpen={stateModalDelete} title={"To delete your account confirm your password"}/>
 
-      {/*Caso erro midia*/}
-      {stateMidiaErrorFade && <AlertFadeDanger message="Error on updating file." duration={1500} />}
+      {/*Caso erro upload midia*/}
+      {stateErrorFade && <AlertFadeDanger message={stateErrorFadeContent} duration={1500} />}
 
       {/* caso sucesso em upload midia */}
-      {stateMidiaSuccessFade && <AlertFadeSuccess message="Sucess!" duration={1500} />}
+      {stateSuccessFade && <AlertFadeSuccess message={stateSuccessFadeContent} duration={1500} />}
 
       <div className="relative flex flex-col items-center rounded-[20px] mx-auto p-4 bg-white bg-clip-border shadow-3xl shadow-shadow-500 mb-6">
         <div className="relative flex h-32 w-full justify-center rounded-xl bg-cover">
@@ -269,7 +545,7 @@ export default function MyProfile() {
               </span>
             )}
           <div className="absolute -bottom-12 h-[87px] w-[87px] items-center justify-center rounded-full border-[4px] border-white bg-white">
-            <img className="h-full w-full rounded-full p-1" src={statePhoto || "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user-256.png"} alt="user-photo" />
+            <img className="h-full w-full rounded-full p-1 object-cover" src={statePhoto || "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user-256.png"} alt="user-photo" />
             {user.nick == params.nick && (
               <span className="relative z-20 inset-x-[78%] bottom-1/2">
                 <div className="bg-[#3b82f6] p-2 rounded-full h-fit w-fit">

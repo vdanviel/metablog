@@ -1,7 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Button({ activate, content, type, bg_color, hover_bg_color, font_color, onClick }) {
+
     const [backgroundColor, setBackgroundColor] = useState(bg_color);
+
+    useEffect(() => {
+        setBackgroundColor(bg_color);
+    }, [bg_color])
 
     const handleMouseEnter = () => {
         setBackgroundColor(hover_bg_color);
