@@ -81,7 +81,7 @@ export default function RenderFeed({ userId }) {
         }
 
         return publications.map(item => (
-            <div key={item._id} className="w-[32vh] lg:w-[40vh] overflow-hidden bg-white rounded-lg lg:shadow-lg">
+            <div key={item._id} className="w-[32vh] lg:w-[40vh] overflow-hidden bg-white rounded-lg lg:shadow-lg m-5">
                 <div className="px-4 py-2">
                     <div className="flex items-center gap-1 mb-3">
                         <img className="w-[30px] h-[30px] rounded-full object-cover" src={item.user.photo || "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user-256.png"} alt="profile_pic"/>

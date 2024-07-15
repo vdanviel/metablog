@@ -1,10 +1,11 @@
 //libs
 import { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 //component
 import Banner from '../assets/banner-preview.png';
 import RenderUserPublications from "../components/render/render_user_posts.jsx";
+import FollowButton from "../components/follow_button.jsx";
 import Modal from "../components/modal.jsx";
 import Button from "../components/button.jsx";
 import AlertFadeDanger from "../components/alert/fade/danger.jsx";
@@ -25,22 +26,23 @@ export default function MyProfile() {
   const [statePostsCount, setPostsCount] = useState('...');
   const [stateUser, setUser] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem('user'))
-  const params = useParams();
-
   const [stateModalEdit, setModalEdit] = useState(false);
   const [stateBtnEditActivate, setBtnEditActivate] = useState(false);
   const [stateEditBtnContent, setEditBtnContent] = useState("Cannot be equal");
+  
+  const [stateBtnDeleteActivate, setBtnDeleteActivate] = useState(true);
+  const [stateDeleteBtnContent, setDeleteBtnContent] = useState("Yes");
 
   const [stateModalDelete, setModalDelete] = useState(false);
-
-  const [stateBtnFollowActivate, setBtnFollowActivate] = useState(false);
-  const [stateBtnFollowContent, setBtnFollowContent] = useState(false);
 
   const [stateErrorFade, setErrorFade] = useState(false);
   const [stateErrorFadeContent, setErrorFadeContent] = useState(null);
   const [stateSuccessFade, setSuccessFade] = useState(false);
   const [stateSuccessFadeContent, setSuccessFadeContent] = useState(null);
+ 
+  const user = JSON.parse(localStorage.getItem('user'))
+  const params = useParams();
+  const navigate = useNavigate();
 
   const getUser = async (nick) => {
     try {
@@ -58,9 +60,9 @@ export default function MyProfile() {
     }
   };
 
-  const handleProfilePage = async () => {
+  const handleProfilePage = async (userNick) => {
 
-    const data = await getUser(params.nick);
+    const data = await getUser(userNick);
 
     //console.log(data);
 
@@ -82,7 +84,7 @@ export default function MyProfile() {
 
   useEffect(() => {
 
-    handleProfilePage();
+    handleProfilePage(params.nick);
 
   }, [stateName, stateNick, stateBio, statePhoto, stateBanner]);
 
@@ -128,7 +130,7 @@ export default function MyProfile() {
 
       }, 2500);
 
-      const new_public_user = await handleProfilePage();
+      const new_public_user = await handleProfilePage(params.nick);
 
       //atualizando o localstorage..
       let currentUserData = JSON.parse(localStorage.getItem('user'));
@@ -185,7 +187,7 @@ export default function MyProfile() {
 
         }, 2500);
 
-        const new_public_user = await handleProfilePage();
+        const new_public_user = await handleProfilePage(params.nick);
 
         //atualizando o localstorage..
         let currentUserData = JSON.parse(localStorage.getItem('user'));
@@ -222,6 +224,7 @@ export default function MyProfile() {
     nick.classList.remove('border-red-400');
     document.getElementById('error_bio').innerHTML = ""
     bio.classList.remove('border-red-400');
+    document.querySelector('#error_edit').innerText = "";
 
     try {
       
@@ -285,14 +288,23 @@ export default function MyProfile() {
 
        }else{
 
-        document.querySelector('#error').innerText = data.text;
+        document.querySelector('#error_edit').innerText = data.text;
 
        }
 
       }else{
 
+        //dando alerte de sucesso..
+        setSuccessFade(true);
+
+        setSuccessFadeContent(data.text);
+
+        setTimeout(() => {
+          setSuccessFade(false);
+        }, 2500);
+
         //mudando os dados do localstorage..
-        const new_public_user = await handleProfilePage();
+        const new_public_user = await handleProfilePage(nick.value);
 
         //atualizando o localstorage..
         let currentUserData = JSON.parse(localStorage.getItem('user'));
@@ -303,18 +315,8 @@ export default function MyProfile() {
 
         localStorage.setItem('user', JSON.stringify(currentUserData));
 
-        name.value = stateName;
-        nick.value = stateNick;
-        bio.value = stateBio;
+        navigate("/profile/" + new_public_user.nick)
 
-        //dando alerte de sucesso..
-        setSuccessFade(true);
-
-        setSuccessFadeContent(data.text);
-
-        setTimeout(() => {
-          setSuccessFade(false);
-        }, 2500);
 
       }
 
@@ -426,7 +428,7 @@ export default function MyProfile() {
             <small id="error_bio" className="font-bold text-red-600"></small>
           </div>
 
-          <p id="error" className="font-bold text-[#f01313] mt-4 text-center"></p>
+          <p id="error_edit" className="font-bold text-[#f01313] mt-4 text-center"></p>
 
       </div>
 
@@ -440,41 +442,110 @@ export default function MyProfile() {
   );
 
   //deletar
-  const fetchDelete = () => {
+  const fetchDelete = async (e) => {
 
-    console.log(true);
+    e.preventDefault();
+
+    setBtnDeleteActivate(false);
+    setDeleteBtnContent("Loading...")
+
+    let password = document.querySelector('#deletepassword');
+
+    let myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    let raw = JSON.stringify({
+      "id_user": user._id,
+      "password": password.value
+    });
+
+    let requestOptions = {
+      method: 'DELETE',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+    const response = await fetch("http://localhost:8005/user/delete", requestOptions);
+    const data = await response.json();
+
+    document.getElementById('error_password').innerHTML = ""
+    password.classList.remove('border-red-400');
+    document.querySelector('#error_delete').innerText = "";
+
+    try {
+      
+
+      if (data.status == false) {
+        
+       if (data.missing) {
+        
+        data.missing.forEach(element => {
+          
+          switch (element) {
+
+            case 'password':
+              
+              document.getElementById('error_password').innerHTML = "Password is required."
+              password.classList.add('border-red-400');
+              
+              break;
+          
+            default:
+
+              console.error("Name of shields don't match.");
+
+              break;
+          }
+
+        });
+
+       }else{
+
+        document.querySelector('#error_delete').innerText = data.text;
+
+       }
+
+      }else{
+
+        window.location.href = window.location.origin;
+        navigate('/');
+        localStorage.clear();
+
+      }
+
+      setBtnDeleteActivate(true);
+      setDeleteBtnContent("Yes")
+
+    } catch (error) {
+      
+      console.error(error);
+
+    }
+
 
   }
 
   const delete_md_content = (
 
     <form>
-        <div className="w-full mt-4">
-            <input
-                className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
-                type="email"
-                placeholder="Email Address"
-                id='inemail'
-            />
-            <small id="error_email" className="font-bold text-[#f01313]"></small>
-        </div>
 
-        <div className="w-full mt-4">
-            <input
-                className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
-                type="password"
-                id='inpassword'
-                placeholder="Make sure to remember it"
-                aria-autocomplete=''
-            />
-            <small id="error_password" className="font-bold text-[#f01313]"></small>
+        <div className="w-full">
+          <label htmlFor="deletepassword" className="text-gray-700">To delete your account confirm your password:</label>
+          <input
+              className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+              type="password"
+              placeholder="Password"
+              id='deletepassword'
+          />
+          <small id="error_password" className="font-bold text-[#f01313]"></small>
         </div>
-
-        <p id="error" className="font-bold text-[#f01313] mt-4 text-center"></p>
+        
+        <p id="error_delete" className="font-bold text-[#f01313] mt-4 text-center"></p>
 
         <div className="flex items-center justify-between mt-4">
-            
-            <Button activate={stateBtnFollowActivate} bg_color="#3b82f6" hover_bg_color="#4f65ff" font_color="white" content={stateBtnFollowContent} txtsize="16px" type="submit" onClick={fetchDelete} />
+            <p>Are you sure you want to delete this account ?</p>
+            <Button activate={stateBtnDeleteActivate} bg_color="#f01313" hover_bg_color="#f01313" font_color="white" content={stateDeleteBtnContent} txtsize="16px" type="submit" onClick={fetchDelete} />
 
         </div>
     </form>
@@ -503,7 +574,7 @@ export default function MyProfile() {
     }else{
 
       return(
-        <Button bg_color="#3b82f6" hover_bg_color="#4f65ff" font_color="white" activate={true} content={"Follow"}/>
+        <FollowButton profile={stateUser}/>
       )
 
     }
@@ -518,7 +589,7 @@ export default function MyProfile() {
       <Modal content={edit_md_content} onClose={() => setModalEdit(false)} onOpen={stateModalEdit} title={"Edit your account"}/>
 
       {/* modal deletar */}
-      <Modal content={delete_md_content} onClose={() => setModalDelete(false)} onOpen={stateModalDelete} title={"To delete your account confirm your password"}/>
+      <Modal content={delete_md_content} onClose={() => setModalDelete(false)} onOpen={stateModalDelete} title={"Delete account"}/>
 
       {/*Caso erro upload midia*/}
       {stateErrorFade && <AlertFadeDanger message={stateErrorFadeContent} duration={1500} />}

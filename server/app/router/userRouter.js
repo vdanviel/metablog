@@ -33,13 +33,13 @@ userRouter.post('/register', async (req, res) => {
 
             //VALIDA NICKNAME
             //verifica se há espaço ou qualquer caractere menos _
-            let not_allowed_caracters_nick = /[ !@#$%¨&*()+-]/g;
+            let not_allowed_characters_nick = /[ !@#$%¨&*()+\-áéíóúãõÁÉÍÓÚÃÕ]/;
 
-            if (not_allowed_caracters_nick.test(req.body.nick) == true) {
+            if (not_allowed_characters_nick.test(req.body.nick) == true) {
                 
                 return res.status(400).json({
                     status: false,
-                    text: 'Nickname cannot contain spaces or special caracters but underline.'
+                    text: 'Nickname cannot contain spaces or special caracters unless underline.'
                 });
 
             }
@@ -288,6 +288,51 @@ userRouter.patch('/follow', async (req, res) => {
 
 });
 
+userRouter.patch('/unfollow', async (req, res) => {
+
+    try {
+
+        let required = ['id_user', 'nick'];
+
+        let validating = utils.validate(req.body,required);
+
+        if(validating == true){
+
+            const follow = await controller.unfollow(req.body.id_user, req.body.nick);
+
+            if (follow.status == false) {
+                
+                return res.status(400).json({follow});
+
+            }else{
+
+                return res.status(200).json({follow});
+
+            }
+
+        }else{
+
+            return res.status(400).json({
+                status: false,
+                text: "Please fill in the required fields.",
+                missing: validating
+            });
+
+        }
+
+    } catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+            error: {
+                message: error.message,
+                stack: error.stack
+            }
+        });
+    }
+
+});
+
 userRouter.patch('/change-password', async (req, res) => {
 
     try {
@@ -372,13 +417,13 @@ userRouter.put('/update', async (req, res) => {
 
             //VALIDA NICKNAME
             //verifica se há espaço ou qualquer caractere menos _
-            let not_allowed_caracters_nick = /[ !@#$%¨&*()+-]/g;
+            let not_allowed_characters_nick = /[ !@#$%¨&*()+\-áéíóúãõÁÉÍÓÚÃÕ]/;
 
-            if (not_allowed_caracters_nick.test(req.body.nick) == true) {
+            if (not_allowed_characters_nick.test(req.body.nick) == true) {
                 
                 return res.status(400).json({
                     status: false,
-                    text: 'Nickname cannot contain spaces or special caracters but underline.'
+                    text: 'Nickname cannot contain spaces or special caracters unless underline.'
                 });
 
             }

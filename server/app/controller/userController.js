@@ -367,89 +367,116 @@ const controller = {
         }
     },
     
-    async follow(follower_id, following_nickname){
-
+    async follow(follower_id, following_nickname) {
         try {
-            
             // Verificar se os usuários existem
             const follower = await userModelInstance.findbyid(follower_id);
-            const following = await usercoll.findOne({nick: following_nickname});
-
+            const following = await usercoll.findOne({ nick: following_nickname });
+    
             if (!follower || !following) {
-                
                 return {
                     status: false,
-                    text: "The user does not exists."
+                    text: "The user does not exist."
                 };
-
             }
-            
-            //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
-            //equals() - https://www.mongodb.com/docs/atlas/atlas-search/equals/#std-label-equals-ref (leia a primeira parte)
-            //variavel que verifica no array de usuario sendo seguidos se ja existe algum com o id do usuario trajeto a ser seguido..
-            let compare = follower.following.some(id => id.equals(following._id));
-
-            //se usuário já segue o following..
+    
+            // Verificar se o usuário já segue o seguinte
+            let compare = follower.following.some(nick => nick.equals(following.nick));
+    
             if (compare) {
-
-                //vetar
                 return {
                     status: false,
-                    text: `You follow @${following.nick} already.`
+                    text: `You already follow @${following.nick}.`
                 };
-
             }
-
-            //https://www.mongodb.com/docs/manual/reference/operator/update/push/#mongodb-update-up.-push
-            //usuario seguidor recebe quem está seguindo..
-            const handleing_follower = await userModelInstance.update(follower_id, { $push: { following: new mongodb.ObjectId(following_id) }})
-
-            //usuario seguido recebe o seguidor..
-            const handleing_following = await userModelInstance.update(following_id, { $push: { followers: new mongodb.ObjectId(follower_id) }})
-            
-            if (handleing_follower == false || handleing_following == false) {
-                
+    
+            // Atualizar o seguidor com o usuário seguido
+            const handleing_follower = await userModelInstance.update(follower_id, { $push: { following: following.nick } });
+    
+            // Atualizar o usuário seguido com o seguidor
+            const handleing_following = await userModelInstance.update(following._id, { $push: { followers: follower.nick } });
+    
+            if (!handleing_follower || !handleing_following) {
                 return {
                     status: false,
                     text: "It wasn't possible to follow the user."
                 };
-
-            }            
-
+            }
+    
             return {
                 status: true,
-                text: `You've successfully followed @${following.nick}!`,
-
-            }
-
+                text: `You've successfully followed @${following.nick}!`
+            };
+    
         } catch (error) {
             return {
                 status: false,
-                text: "Internal server error on controller/post.",
-                erro: error
-            }
+                text: "Internal server error on controller/user.",
+                error: {
+                    message: error.message,
+                    stack: error.stack,
+                    file: error.fileName,
+                    line: error.lineNumber,
+                    column: error.columnNumber
+                }
+            };
         }
-
     },
 
-    async unfollow(follower_id, following_id){
-
+    async unfollow(follower_id, following_nickname) {
         try {
-            
-            // db.stores.updateMany(
-            //     { },
-            //     { $pull: { fruits: { $in: [ "apples", "oranges" ] }, vegetables: "carrots" } }
-            // )
-
+            // Verificar se os usuários existem
+            const follower = await userModelInstance.findbyid(follower_id);
+            const following = await usercoll.findOne({ nick: following_nickname });
+    
+            if (!follower || !following) {
+                return {
+                    status: false,
+                    text: "The user does not exist."
+                };
+            }
+    
+            // Verificar se o usuário realmente segue o outro usuário
+            let compare = follower.following.some(nick => nick.equals(following.nick));
+    
+            if (!compare) {
+                return {
+                    status: false,
+                    text: `You don't follow @${following.nick}.`
+                };
+            }
+    
+            // Remover o usuário seguido da lista de seguidores do seguidor
+            const handleing_follower = await userModelInstance.update(follower_id, { $pull: { following: following.nick } });
+    
+            // Remover o seguidor da lista de seguidores do usuário seguido
+            const handleing_following = await userModelInstance.update(following._id, { $pull: { followers: follower.nick } });
+    
+            if (!handleing_follower || !handleing_following) {
+                return {
+                    status: false,
+                    text: "It wasn't possible to unfollow the user."
+                };
+            }
+    
+            return {
+                status: true,
+                text: `You've successfully unfollowed @${following.nick}.`
+            };
         } catch (error) {
             return {
                 status: false,
-                text: "Internal server error on controller/post.",
-                erro: error
-            }
+                text: "Internal server error on controller/user.",
+                error: {
+                    message: error.message,
+                    stack: error.stack,
+                    file: error.fileName,
+                    line: error.lineNumber,
+                    column: error.columnNumber
+                }
+            };
         }
-
-    },
+    },    
 
     async resetPassword(id_user, type, token, newPassword) {
 
@@ -512,76 +539,103 @@ const controller = {
 
         } catch (error) {
 
-          return {
-            status: false,
-            text: "Internal server error on controller/user.",
-            error: {
-              message: error.message,
-              stack: error.stack
+            return {
+                status: false,
+                text: "Internal server error on controller/user.",
+                error: {
+                    message: error.message,
+                    stack: error.stack,
+                    file: error.fileName, 
+                    line: error.lineNumber, 
+                    column: error.columnNumber, 
+                }
             }
-          };
           
         }
     },
 
     async deleteAccount(id_user, password) {
-
         try {
-            
-            const user = await usercoll.findOne({"_id": new mongodb.ObjectId(id_user)});
-
+            const user = await usercoll.findOne({ "_id": new mongodb.ObjectId(id_user) });
+    
             if (!user) {
                 return {
                     status: false,
                     text: "User not found."
                 };
             }
-
-            let original_password  = CryptoJS.AES.decrypt(user.password, config.crytokey).toString(CryptoJS.enc.Utf8);
-
-            if (original_password != password) {
-                
+    
+            const original_password = CryptoJS.AES.decrypt(user.password, config.crytokey).toString(CryptoJS.enc.Utf8);
+    
+            if (original_password !== password) {
                 return {
                     status: false,
-                    text: "The password id invalid."
+                    text: "The password is invalid."
+                };
+            }
+    
+            // Primeiro, verifica se o usuário possui posts
+            const userPostsCount = await postcoll.countDocuments({ "user_id": new mongodb.ObjectId(id_user) });
+    
+            if (userPostsCount > 0) {
+                // Se o usuário tiver posts, tenta deletar os posts
+                const posts_deleted = await postcoll.deleteMany({ "user_id": new mongodb.ObjectId(id_user) });
+    
+                // Se os posts foram deletados com sucesso
+                if (posts_deleted.deletedCount > 0) {
+                    // Tenta deletar o usuário
+                    const deleted = await usercoll.deleteOne({ "_id": new mongodb.ObjectId(id_user) });
+    
+                    // Se o usuário foi deletado com sucesso
+                    if (deleted.deletedCount > 0) {
+                        return {
+                            status: true,
+                            text: "Account and posts deleted successfully."
+                        };
+                    } else {
+                        return {
+                            status: false,
+                            text: "Error on deleting account.",
+                            reason: deleted
+                        };
+                    }
+                } else {
+                    return {
+                        status: false,
+                        text: "Error on deleting posts.",
+                        reason: posts_deleted
+                    };
                 }
-
-            }else{
-
-                const deleted = await usercoll.deleteOne({"_id": new mongodb.ObjectId(id_user)});
-
-                const posts_deleted = await postcoll.deleteMany({"user_id": new mongodb.ObjectId(id_user)});
-
-                if(deleted.deletedCount > 0 && posts_deleted.deletedCount > 0){
-
+            } else {
+                // Se o usuário não tiver posts, tenta deletar apenas o usuário
+                const deleted = await usercoll.deleteOne({ "_id": new mongodb.ObjectId(id_user) });
+    
+                // Se o usuário foi deletado com sucesso
+                if (deleted.deletedCount > 0) {
                     return {
                         status: true,
                         text: "Account deleted successfully."
-                    }
-
-                }else{
-
+                    };
+                } else {
                     return {
                         status: false,
                         text: "Error on deleting account.",
                         reason: deleted
-                    }
-
+                    };
                 }
-
             }
-
         } catch (error) {
-
-          return {
-            status: false,
-            text: "Internal server error on controller/user.",
-            error: {
-              message: error.message,
-              stack: error.stack
+            return {
+                status: false,
+                text: "Internal server error on controller/user.",
+                error: {
+                    message: error.message,
+                    stack: error.stack,
+                    file: error.fileName, 
+                    line: error.lineNumber, 
+                    column: error.columnNumber, 
+                }
             }
-          };
-          
         }
     },
 
