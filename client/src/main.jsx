@@ -16,6 +16,7 @@ import ChangePassword from "./main/change_password.jsx";
 import Feed from "./main/feed.jsx";
 import MyProfile from "./main/profile.jsx";
 import Explore from "./main/explore.jsx";
+import About from "./main/about.jsx";
 
 //pinned components
 import Header from "./components/main/navbar.jsx";
@@ -100,6 +101,14 @@ const modifiedrouter = createBrowserRouter([
     element: (
       <Auth auth={user}>
         <Explore/>
+      </Auth>
+    )
+  },
+  {
+    path: "about",
+    element: (
+      <Auth auth={user}>
+        <About/>
       </Auth>
     )
   }
