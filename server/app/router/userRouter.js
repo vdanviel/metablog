@@ -6,6 +6,7 @@ import jsondata from "../../config.json" assert {type: "json"};
 import { utils } from "../utils/functions.js";
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
+import path from "node:path";
 
 const userRouter = express.Router();//definindo o objeto rota..
 
@@ -115,9 +116,11 @@ userRouter.get('/find/:nick', async (req, res) => {
 })
 
 // Configuração do multer para o armazenamento das imagens
+
 const midiaStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, config.uploads_local_directory);
+        const local = path.resolve('../../metablog/server/uploads');
+        cb(null, local);
     },
     filename: function (req, file, cb) {
         let uniqueName = uuidv4() + ".jpeg"; // Gerando um nome aleatório único para cada upload
@@ -229,6 +232,36 @@ userRouter.post('/login', async (req, res) => {
             });
 
         }
+
+    } catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+            error: {
+                message: error.message,
+                stack: error.stack
+            }
+        });
+    }
+
+});
+
+userRouter.get('/follows/list/:nick/:offset/:limit', async (req, res) => {
+
+    try {
+
+        const list = await controller.list_follower_following(req.params.nick, req.params.limit, req.params.limit);
+
+        if (list.status == false) {
+            
+            return res.status(400).json({list});
+
+        }else{
+
+            return res.status(200).json({list});
+
+        }
+
 
     } catch (error) {
         return res.status(500).json({

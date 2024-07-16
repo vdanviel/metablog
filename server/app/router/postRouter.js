@@ -16,9 +16,11 @@ import { v4 as uuidv4 } from 'uuid';
 const postRouter = express.Router();//definindo o objeto rota..
 
 //configurando o envio dos arquivos..
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, config.uploads_local_directory);
+        const local = path.resolve('../../metablog/server/uploads');
+        cb(null, local);
     },
     filename: (req, file, cb) => {
 
@@ -34,7 +36,7 @@ const upload = multer({ storage: storage });
 // Rota para publicar
 postRouter.post('/', upload.array('medias', 10), async (req, res) => {
     try {
-
+        
         if (!req.body.content && !req.files) {
             return res.status(400).json({
                 status: false,

@@ -1,5 +1,8 @@
-// RenderFeed.jsx
+//libs..
 import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+
+//components
 import InfiniteScroll from "react-infinite-scroll-component";
 import { MdDoNotDisturb } from "react-icons/md";
 import { PiSmileySad } from "react-icons/pi";
@@ -7,9 +10,14 @@ import { TfiMinus } from "react-icons/tfi";
 import Slider from "react-slick";
 
 export default function RenderFeed({ userId }) {
+
+    //rectives..
     const [publications, setPublications] = useState([]);
     const [hasMore, setHasMore] = useState(true);
     const [offset, setOffset] = useState(0);
+
+    //vars..
+    const navigate = useNavigate();
 
     const fetchItems = async (id, offset, limit) => {
         try {
@@ -81,7 +89,7 @@ export default function RenderFeed({ userId }) {
         }
 
         return publications.map(item => (
-            <div key={item._id} className="w-[32vh] lg:w-[40vh] overflow-hidden bg-white rounded-lg lg:shadow-lg m-5">
+            <div key={item._id} onClick={() => navigate('/profile/' + item.user.nick)} className="w-[32vh] lg:w-[40vh] overflow-hidden bg-white rounded-lg lg:shadow-lg m-5  cursor-pointer">
                 <div className="px-4 py-2">
                     <div className="flex items-center gap-1 mb-3">
                         <img className="w-[30px] h-[30px] rounded-full object-cover" src={item.user.photo || "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user-256.png"} alt="profile_pic"/>
@@ -91,7 +99,7 @@ export default function RenderFeed({ userId }) {
                 </div>
                 <div className="flex items-center justify-between px-4 py-2 bg-[#3b82f6]">
                     <small className="text-sm text-white">{new Date(item.created_at).toLocaleString()}</small>
-                    <button className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none">More</button>
+                    <button onClick={() => navigate('/profile/' + item.user.nick)} className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none">More</button>
                 </div>
                 {item.media.length === 1 ? renderMedia(item.media) : (
                     <div className="slider-container m-0 p-0">

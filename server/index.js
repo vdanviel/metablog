@@ -8,7 +8,6 @@ import { fileURLToPath } from 'url';
 
 const server = express();
 
-
 //MIDDLEWARES
 //para servidor entender dados json das requisições, temos esse middleware express que entende dados json..
 server.use(express.json());

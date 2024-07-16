@@ -21,10 +21,23 @@ const controller = {
                 };
             }        
             
-            user.following.push(new mongodb.ObjectId(user_id));
+            //pegando os dados dos usuários seguidos..
+            const followings_users = await usercoll.find({ nick: { $in: user.following } }).toArray();
 
+            //recuperar o id de cada um desses usuários..
+            const followings_ids = []
+            followings_users.forEach(data => {
+                
+                followings_ids.push(new mongodb.ObjectId(data._id));
+
+            });
+
+            //adiciona o id do propio usuario..
+            followings_ids.push(new mongodb.ObjectId(user_id));
+
+            //procura os posts pelo "user_id" na collection "post"..
             const posts = await postcoll
-            .find({ user_id: { $in: user.following } })
+            .find({ user_id: { $in: followings_ids } })
             .sort({ created_at: -1 })
             .skip(Number(offset))
             .limit(Number(limit) + 1)
@@ -83,8 +96,19 @@ const controller = {
     },
 
     async publicate(user_id, content, arr_midia) {
+
         try {
-    
+            
+            // Verificar se o usuário existe
+            const user = await userModelInstance.findbyid(user_id);
+
+            if (!user) {
+                return {
+                    status: false,
+                    text: "The user does not exist."
+                };
+            } 
+
             const inserted =
             await PostModelInstance.insert(
                 {
@@ -110,7 +134,6 @@ const controller = {
             );
 
             if (inserted === false) {
-                
 
                 return {
                     status: false,

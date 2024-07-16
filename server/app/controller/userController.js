@@ -63,10 +63,10 @@ const controller = {
             const posts_count = await postcoll.countDocuments({user_id: new mongodb.ObjectId(user._id)});
                         
             //a qnt de usuários que esse usuário segue..
-            const followers_count = await usercoll.countDocuments({ _id: { $in: user.followers } });   
+            const followers_count = user.followers.length;
 
             //a qnt de usuários que seguem esse usuário..
-            const following_count = await usercoll.countDocuments({ _id: { $in: user.following } });
+            const following_count = user.following.length;
 
             Object.assign(user, {posts_count: posts_count});
             Object.assign(user, {followers_count: followers_count});
@@ -88,6 +88,61 @@ const controller = {
           };
         }
         
+    },
+
+    async list_follower_following(nick, offset = 0, limit = 10) {
+        try {
+            const query = { nick: nick };
+    
+            // Execute query to find the user
+            const user = await usercoll.findOne(query);
+    
+            if (!user) {
+                return {
+                    status: false,
+                    text: "User not found."
+                };
+            }
+    
+            const options = {
+                sort: { "_id": -1 },
+                projection: { 
+                    password: 0,
+                    email: 0,
+                    banner: 0
+                }
+            };
+    
+            // Apply offset and limit
+            const following_profiles = await usercoll.find({ "nick": { $in: user.following } }, options)
+                .skip(offset)
+                .limit(limit)
+                .toArray();
+            
+            const follower_profiles = await usercoll.find({ "nick": { $in: user.follower } }, options)
+                .skip(offset)
+                .limit(limit)
+                .toArray();
+    
+            return {
+                status: true,
+                following: following_profiles,
+                followers: follower_profiles
+            };
+    
+        } catch (error) {
+            return {
+                status: false,
+                text: "Internal server error on controller/user.",
+                error: {
+                    message: error.message,
+                    stack: error.stack,
+                    file: error.fileName, 
+                    line: error.lineNumber, 
+                    column: error.columnNumber, 
+                }
+            };
+        }
     },
 
     async register_user(name, nick, email, bio, password) {
@@ -381,7 +436,7 @@ const controller = {
             }
     
             // Verificar se o usuário já segue o seguinte
-            let compare = follower.following.some(nick => nick.equals(following.nick));
+            let compare = follower.following.some(nick => nick == following.nick);
     
             if (compare) {
                 return {
@@ -437,7 +492,7 @@ const controller = {
             }
     
             // Verificar se o usuário realmente segue o outro usuário
-            let compare = follower.following.some(nick => nick.equals(following.nick));
+            let compare = follower.following.some(nick => nick == following.nick);
     
             if (!compare) {
                 return {
