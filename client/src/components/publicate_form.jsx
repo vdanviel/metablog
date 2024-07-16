@@ -7,6 +7,9 @@ export default function PublicateForm(props) {
     //props
     const {id_user, nick, photo, onPublish} = props;
 
+    //vars..
+    const navigate = useNavigate();
+
     //state vars..
     const [btnDesative, setbtnDesativate] = useState(true);
     const [btnText, setbtnText] = useState("Write something to publish...");
@@ -154,7 +157,7 @@ export default function PublicateForm(props) {
         <form id="sendForm" className="min-w-[38vh] overflow-hidden bg-white rounded-[16px] lg:shadow-lg">
             
             <div className="px-4 py-2">
-                <div className="flex items-center gap-1 mb-3">
+                <div onClick={() => navigate('/profile/' + nick)} className="flex items-center gap-1 mb-3">
                     <img
                         className="w-[30px] h-[30px] rounded-full object-cover"
                         src={photo || "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user-256.png"}

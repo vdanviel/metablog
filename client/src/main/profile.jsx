@@ -1,8 +1,8 @@
-//libs
-import { useState, useEffect, useCallback } from "react";
+//libs..
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-//component
+//components..
 import Banner from '../assets/banner-preview.png';
 import RenderUserPublications from "../components/render/render_user_posts.jsx";
 import FollowButton from "../components/follow_button.jsx";
@@ -10,12 +10,16 @@ import Modal from "../components/modal.jsx";
 import Button from "../components/button.jsx";
 import AlertFadeDanger from "../components/alert/fade/danger.jsx";
 import AlertFadeSuccess from "../components/alert/fade/success.jsx";
+import RenderFollowing from "../components/render/render_following.jsx";
+import RenderFollowers from "../components/render/render_followers.jsx";
 
-//icon
+//icons..
 import { MdEdit } from "react-icons/md";
 import { MdDeleteForever } from "react-icons/md"; 
 
 export default function MyProfile() {
+
+  //data...
   const [stateName, setName] = useState('...');
   const [stateNick, setNick] = useState('...');
   const [stateBio, setBio] = useState('...');
@@ -26,20 +30,29 @@ export default function MyProfile() {
   const [statePostsCount, setPostsCount] = useState('...');
   const [stateUser, setUser] = useState(null);
 
+  //edit..
   const [stateModalEdit, setModalEdit] = useState(false);
   const [stateBtnEditActivate, setBtnEditActivate] = useState(false);
   const [stateEditBtnContent, setEditBtnContent] = useState("Cannot be equal");
   
+  //delete..
   const [stateBtnDeleteActivate, setBtnDeleteActivate] = useState(true);
   const [stateDeleteBtnContent, setDeleteBtnContent] = useState("Yes");
-
   const [stateModalDelete, setModalDelete] = useState(false);
 
+  //alerts..
   const [stateErrorFade, setErrorFade] = useState(false);
   const [stateErrorFadeContent, setErrorFadeContent] = useState(null);
   const [stateSuccessFade, setSuccessFade] = useState(false);
   const [stateSuccessFadeContent, setSuccessFadeContent] = useState(null);
- 
+  
+  //following..
+  const [stateModalFollowing, setModalFollowing] = useState(false);
+
+  //followers..
+  const [stateModalFollowers, setModalFollowers] = useState(false);
+
+  //vars..
   const user = JSON.parse(localStorage.getItem('user'))
   const params = useParams();
   const navigate = useNavigate();
@@ -597,6 +610,12 @@ export default function MyProfile() {
       {/* caso sucesso em upload midia */}
       {stateSuccessFade && <AlertFadeSuccess message={stateSuccessFadeContent} duration={1500} />}
 
+      {/* modal de seguindo.. */}
+      <Modal content={<RenderFollowing publicUser={stateUser} />} title="Following" onClose={() => setModalFollowing(false)} onOpen={stateModalFollowing}/>
+
+      {/* modal de seguidores.. */}
+      <Modal content={<RenderFollowers publicUser={stateUser} />} title="Followers" onClose={() => setModalFollowers(false)} onOpen={stateModalFollowers}/>
+
       <div className="relative flex flex-col items-center rounded-[20px] mx-auto p-4 bg-white bg-clip-border shadow-3xl shadow-shadow-500 mb-6">
         <div className="relative flex h-32 w-full justify-center rounded-xl bg-cover">
           <img src={stateBanner || Banner} className="absolute object-cover flex h-32 w-full justify-center rounded-xl bg-cover" alt="banner" />
@@ -644,22 +663,26 @@ export default function MyProfile() {
         </div>
 
         <div className="mt-6 mb-3 flex gap-14 md:!gap-14">
+
           <div className="flex flex-col items-center justify-center">
             <p className="text-2xl font-bold text-navy-700">{statePostsCount}</p>
             <p className="text-sm font-normal text-gray-600">Posts</p>
           </div>
-          <div className="flex flex-col items-center justify-center">
+          
+          <div className="flex flex-col items-center justify-center cursor-pointer" onClick={() => setModalFollowers(true)}>
             <p className="text-2xl font-bold text-navy-700">
               {stateFollowersCount}
             </p>
             <p className="text-sm font-normal text-gray-600">Followers</p>
           </div>
-          <div className="flex flex-col items-center justify-center">
+
+          <div className="flex flex-col items-center justify-center cursor-pointer" onClick={() => setModalFollowing(true)}>
             <p className="text-2xl font-bold text-navy-700">
               {stateFollowingCount}
             </p>
             <p className="text-sm font-normal text-gray-600">Following</p>
           </div>
+
         </div>
       </div>
 

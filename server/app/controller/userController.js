@@ -38,7 +38,7 @@ const controller = {
     async find(nick){
 
         try {
-            
+
             const query = { nick: nick };
 
             const options = {
@@ -58,6 +58,14 @@ const controller = {
 
             // Execute query
             const user = await usercoll.findOne(query, options);
+
+            // verificar se usuario exite
+            if (!user) {
+                return {
+                    status: false,
+                    text: "User not found."
+                };
+            }
 
             //a qnt de posts desse usuário..
             const posts_count = await postcoll.countDocuments({user_id: new mongodb.ObjectId(user._id)});
@@ -90,11 +98,10 @@ const controller = {
         
     },
 
-    async list_follower_following(nick, offset = 0, limit = 10) {
+    async list_follower_following(nick, offset, limit) {
         try {
             const query = { nick: nick };
     
-            // Execute query to find the user
             const user = await usercoll.findOne(query);
     
             if (!user) {
@@ -105,8 +112,9 @@ const controller = {
             }
     
             const options = {
-                sort: { "_id": -1 },
-                projection: { 
+                sort: { "name": -1 },
+                projection: {
+                    _id:0,
                     password: 0,
                     email: 0,
                     banner: 0
@@ -115,19 +123,19 @@ const controller = {
     
             // Apply offset and limit
             const following_profiles = await usercoll.find({ "nick": { $in: user.following } }, options)
-                .skip(offset)
-                .limit(limit)
+                .skip(Number(offset))
+                .limit(Number(limit))
                 .toArray();
-            
-            const follower_profiles = await usercoll.find({ "nick": { $in: user.follower } }, options)
-                .skip(offset)
-                .limit(limit)
+
+            const followers_profiles = await usercoll.find({ "nick": { $in: user.followers } }, options)
+                .skip(Number(offset))
+                .limit(Number(limit))
                 .toArray();
     
             return {
                 status: true,
                 following: following_profiles,
-                followers: follower_profiles
+                followers: followers_profiles
             };
     
         } catch (error) {

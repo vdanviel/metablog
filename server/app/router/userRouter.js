@@ -250,7 +250,7 @@ userRouter.get('/follows/list/:nick/:offset/:limit', async (req, res) => {
 
     try {
 
-        const list = await controller.list_follower_following(req.params.nick, req.params.limit, req.params.limit);
+        const list = await controller.list_follower_following(req.params.nick, req.params.offset, req.params.limit);
 
         if (list.status == false) {
             
