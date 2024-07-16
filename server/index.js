@@ -1,10 +1,13 @@
-//definindo variaveis..
+//libs/modules..
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+//routers...
 import userRouter from './app/router/userRouter.js';
 import postRouter from './app/router/postRouter.js';
 import tokenRouter from './app/router/tokenRouter.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import exploreRouter from './app/router/exploreRouter.js';
 
 const server = express();
 
@@ -40,6 +43,9 @@ server.use('/post', postRouter);
 
 //tokens
 server.use('/token', tokenRouter);
+
+//tokens
+server.use('/explore', exploreRouter);
 
 //LIGANDO SERVIDOR
 //server.listen() - liga servidor indicando qual porta o servidor vai escutar..

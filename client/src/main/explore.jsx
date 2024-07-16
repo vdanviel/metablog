@@ -1,24 +1,51 @@
-export default function Explore() {
+import React, { useState, useEffect } from 'react';
+import RenderExplore from '../components/render/render_explore.jsx';
+
+const Explore = () => {
+    const [searchParam, setSearchParam] = useState('');
+    const [debouncedSearchParam, setDebouncedSearchParam] = useState('');
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchParam(searchParam);
+        }, 500); // 500ms delay
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [searchParam]);
+
+    const handleInputChange = (e) => {
+        setSearchParam(e.target.value);
+    };
 
     return (
-        <div className="bg-background flex min-h-screen flex-col items-center justify-center" data-id="1">
-            <div className="relative w-full max-w-xl px-4 md:px-6" data-id="2">
-                <div className="mb-8 flex items-center justify-center" data-id="3">
-                    <div className="bg-primary flex h-20 w-20 items-center justify-center rounded-full" data-id="4">
-                        <svg data-id="5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="text-primary-foreground h-10 w-10">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.3-4.3"></path>
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+            <div className="w-full max-w-xl px-4 md:px-6">
+                <div className="mb-8 flex items-center justify-center">
+                    <div className="bg-primary flex h-20 w-20 items-center justify-center rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-foreground h-10 w-10">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.3-4.3"></path>
                         </svg>
                     </div>
                 </div>
-                <p className="text-center text-xs text"></p>
-                <div className="bg-card rounded-full px-6 py-4 shadow-lg" data-id="6">
-                    <div className="flex items-center" data-id="7">
-                        <input className="border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full flex-1 rounded-md border border-none bg-transparent px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="Search..." data-id="8" type="search" />
+                <p className="text-center text-sm md:text-lg text-gray-500 font-bold">Search for any publications or accounts by keyword!</p>
+                <div className="mt-4 bg-card rounded-full px-6 py-3 shadow-lg w-full">
+                    <div className="flex items-center">
+                        <input
+                            className="flex-1 appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                            type="text"
+                            placeholder="Search..."
+                            value={searchParam}
+                            onChange={handleInputChange}
+                        />
                     </div>
                 </div>
             </div>
+            <RenderExplore searchParam={debouncedSearchParam} />
         </div>
-    )
+    );
+};
 
-}
+export default Explore;

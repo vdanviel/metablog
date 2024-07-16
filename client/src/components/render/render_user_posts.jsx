@@ -90,8 +90,7 @@ export default function RenderUserPublications({user}) {
                     <p className="mt-1 text-sm text-gray-600 break-words">{item.content}</p>
                     </div>
                     <div className="flex items-center justify-between px-4 py-2 bg-[#3b82f6]">
-                    <small className="text-sm text-white">{new Date(item.created_at).toLocaleString()}</small>
-                    <button onClick={() => navigate('post/' + item._id)} className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none">More</button>
+                        <small className="text-sm text-white">{new Date(item.created_at).toLocaleString()}</small>
                     </div>
                 </div>
                 );
@@ -138,7 +137,6 @@ export default function RenderUserPublications({user}) {
                     </div>
                     <div className="flex items-center justify-between px-4 py-2 bg-[#3b82f6]">
                         <small className="text-sm text-white">{new Date(item.created_at).toLocaleString()}</small>
-                        <button onClick={() => navigate('post/' + item._id)} className="px-2 py-1 text-sm font-semibold text-gray-900 transition-colors duration-300 transform bg-white rounded hover:bg-gray-200 focus:bg-gray-400 focus:outline-none">More</button>
                     </div>
                     {carousel()}
                     </div>

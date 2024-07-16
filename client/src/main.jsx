@@ -15,6 +15,7 @@ import VerifyForgetPassword from "./main/token_user.jsx";
 import ChangePassword from "./main/change_password.jsx";
 import Feed from "./main/feed.jsx";
 import MyProfile from "./main/profile.jsx";
+import Explore from "./main/explore.jsx";
 
 //pinned components
 import Header from "./components/main/navbar.jsx";
@@ -94,6 +95,14 @@ const modifiedrouter = createBrowserRouter([
       </Auth>
     )
   },
+  {
+    path: "explore",
+    element: (
+      <Auth auth={user}>
+        <Explore/>
+      </Auth>
+    )
+  }
 ]);
 
 //criando o ambiente de display (adicionandoRouterProvider)..

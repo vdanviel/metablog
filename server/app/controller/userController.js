@@ -250,8 +250,6 @@ const controller = {
             // Atualiza a foto do usuário
             const updated = await usercoll.updateOne({_id: new mongodb.ObjectId(id)}, {$set: { "photo": url_photo }});
 
-            console.log(updated);
-
             if (updated.modifiedCount < 1) {
 
                 let err = JSON.stringify(updated)
