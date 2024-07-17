@@ -1,21 +1,18 @@
-# Dockerfile para o backend
+#EM vite.config.js É configurado a questão do docker
 
-# Use uma imagem base que inclua Node.js
-FROM node:16-alpine
+# Use a imagem base do Node para construir a aplicação
+FROM node:18-alpine
 
-# Defina o diretório de trabalho dentro do contêiner
-WORKDIR /app/client
+# Defina o diretório de trabalho
+WORKDIR /app/frontend/
 
-# Copie o arquivo package.json e package-lock.json para o diretório de trabalho
+# Copie os arquivos package.json e package-lock.json para o contêiner
 COPY package*.json ./
 
-# Copie todo o código fonte do backend para o diretório de trabalho
-COPY . .
-
+# Instale as dependências
 RUN npm install
 
-# Exponha a porta onde o servidor do backend estará em execução
-EXPOSE 8000
+# Copie todo o código-fonte para o contêiner
+COPY . .
 
-# Comando para iniciar o servidor do backend em modo de desenvolvimento
 CMD ["npm", "run", "dev"]

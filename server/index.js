@@ -49,7 +49,7 @@ server.use('/explore', exploreRouter);
 
 //LIGANDO SERVIDOR
 //server.listen() - liga servidor indicando qual porta o servidor vai escutar..
-server.listen(('localhost', 8005), () => {
+server.listen(('0.0.0.0', 8005), () => {
 
     console.log("Running!");
 

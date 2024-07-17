@@ -1,15 +1,15 @@
-FROM node:16-alpine
+# specify the node base image with your desired version node:<version>
+FROM node:18
 
-WORKDIR /app/server
+WORKDIR /app/backend
 
 COPY package*.json ./
 
-RUN npm install
-
-COPY config.json ./
-
 COPY . .
 
-EXPOSE 5000
+RUN npm install
 
-CMD ["npm", "run", "dev"]
+# replace this with your application's default port
+EXPOSE 8005
+
+CMD ["npm", "start"];
