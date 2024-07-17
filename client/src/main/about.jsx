@@ -9,36 +9,36 @@ const About = () => {
         </div>
   
         <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4 lg:text-center">Tecnologia Avançada ao Seu Alcance</h2>
+          <h2 className="text-3xl font-bold mb-4 lg:text-center">Advanced Technology at Your Fingertips</h2>
           <ul className="list-disc list-inside">
-            <li className="mb-3">Debouncing: Otimizando a interação do usuário para uma resposta mais ágil.</li>
-            <li className="mb-3">Lazy Load: Carregamento de conteúdo sob demanda para uma experiência de usuário mais rápida.</li>
-            <li className="mb-3">Assincronicidade: Execução de operações sem bloquear a interface do usuário, mantendo-a responsiva.</li>
-            <li className="mb-3">Infinite Scroll: Navegação fluida através de grandes volumes de conteúdo sem recarregar a página.</li>
+            <li className="mb-3">Debouncing: Optimizing user interaction for faster response times.</li>
+            <li className="mb-3">Lazy Load: On-demand content loading for a faster user experience.</li>
+            <li className="mb-3">Asynchronicity: Executing operations without blocking the user interface, keeping it responsive.</li>
+            <li className="mb-3">Infinite Scroll: Smooth navigation through large volumes of content without page reloads.</li>
           </ul>
         </section>
   
         <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4 lg:text-center">Componentes Inovadores</h2>
+          <h2 className="text-3xl font-bold mb-4 lg:text-center">Innovative Components</h2>
           <p className="text-lg text-justify">
-            No frontend, o Metablog adota o Tailwind CSS, uma abordagem moderna para a estilização de componentes que permite designs flexíveis e visualmente atraentes. Cada elemento da interface é meticulosamente projetado para ser intuitivo e funcional, garantindo uma experiência de usuário imersiva.
+            On the frontend, Metablog adopts Tailwind CSS, a modern approach to component styling that allows for flexible and visually appealing designs. Each interface element is meticulously designed to be intuitive and functional, ensuring an immersive user experience.
           </p>
         </section>
   
         <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4 lg:text-center">Funcionalidades Avançadas</h2>
+          <h2 className="text-3xl font-bold mb-4 lg:text-center">Advanced Features</h2>
           <ul className="list-disc list-inside">
-            <li className="mb-3">Envio de Emails com Nodemailer: Comunicação eficiente com os usuários através de notificações e atualizações por email.</li>
-            <li className="mb-3">Salvamento de Mídias com Multer: Gerenciamento eficaz de imagens e outros tipos de mídia, proporcionando uma plataforma rica em conteúdo visual.</li>
+            <li className="mb-3">Email Sending with Nodemailer: Efficient communication with users through notifications and updates via email.</li>
+            <li className="mb-3">Media Upload with Multer: Effective management of images and other types of media, providing a platform rich in visual content.</li>
           </ul>
         </section>
   
         <section>
           <p className="text-lg">
-            Com o Metablog, estamos redefinindo como as pessoas interagem online, oferecendo uma plataforma que combina tecnologia avançada com uma experiência de usuário excepcional. Junte-se a nós nesta jornada para descobrir o potencial ilimitado das redes sociais modernas.
+            With Metablog, we are redefining how people interact online, offering a platform that combines advanced technology with an exceptional user experience. Join us on this journey to discover the unlimited potential of modern social networks.
           </p>
           <p className="text-lg mt-4 text-justify">
-            O Metablog é projetado para ser totalmente responsivo, garantindo uma experiência consistente em todos os dispositivos, desde desktops até smartphones.
+            Metablog is designed to be fully responsive, ensuring a consistent experience across all devices, from desktops to smartphones.
           </p>
         </section>
       </div>
@@ -46,4 +46,3 @@ const About = () => {
   }
   
   export default About;
-  
