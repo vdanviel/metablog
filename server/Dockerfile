@@ -2,7 +2,7 @@ FROM node:16
 
 WORKDIR /app/server
 
-RUN npm install
+CMD ["npm", "install"]
 
 COPY config.json ./
 

@@ -12,7 +12,7 @@ COPY package*.json ./
 # Copie todo o código fonte do backend para o diretório de trabalho
 COPY . .
 
-RUN npm install
+CMD ["npm", "install"]
 
 # Exponha a porta onde o servidor do backend estará em execução
 EXPOSE 8000
