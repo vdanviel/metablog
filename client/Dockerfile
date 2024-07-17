@@ -1,7 +1,7 @@
 # Dockerfile para o backend
 
 # Use uma imagem base que inclua Node.js
-FROM node:latest
+FROM node:16-alpine
 
 # Defina o diretório de trabalho dentro do contêiner
 WORKDIR /app/client
@@ -12,7 +12,7 @@ COPY package*.json ./
 # Copie todo o código fonte do backend para o diretório de trabalho
 COPY . .
 
-CMD ["npm", "install"]
+RUN npm install
 
 # Exponha a porta onde o servidor do backend estará em execução
 EXPOSE 8000

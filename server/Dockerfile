@@ -1,13 +1,15 @@
-FROM node:16
+FROM node:16-alpine
 
 WORKDIR /app/server
 
-CMD ["npm", "install"]
+COPY package*.json ./
+
+RUN npm install
 
 COPY config.json ./
-
-COPY package*.json ./
 
 COPY . .
 
 EXPOSE 5000
+
+CMD ["npm", "run", "dev"]
