@@ -1,7 +1,7 @@
 # specify the node base image with your desired version node:<version>
 FROM node:18
 
-WORKDIR /app/backend
+WORKDIR /app/metablog/server/
 
 COPY package*.json ./
 

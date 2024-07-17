@@ -4,7 +4,7 @@
 FROM node:18-alpine
 
 # Defina o diretório de trabalho
-WORKDIR /app/frontend/
+WORKDIR /app/metablog/client/
 
 # Copie os arquivos package.json e package-lock.json para o contêiner
 COPY package*.json ./
