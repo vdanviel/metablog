@@ -12,7 +12,7 @@ I used mono repository concept to integrate the front with the API.
 I used MRC pattern for the API.
 
 #### **How to run Metablog:**
-Well it's simple to run it for _Docker_.
+Well it's simple to run it with _Docker_.
 But actually I used MongoDB free plan for tests so I can't liberate it for your IP, at least if you don't give me it lol.
 
 Anyways, if you for some reason one day will try it, you can run the project with `docker-compose`.
